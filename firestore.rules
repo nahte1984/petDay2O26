@@ -1,0 +1,85 @@
+rules_version = '2';
+
+// 奧美寵物日投票系統 — Firestore 安全規則
+//
+// 設計重點：整個系統沒有後端（GitHub Pages 是靜態的、Cloud Functions 要付費方案），
+// 所有防作弊都必須在這裡完成。
+//
+// 部署：Firebase Console → Firestore → 規則 → 貼上 → 發布
+//   或 firebase deploy --only firestore:rules
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // ---------- 候選動物 ----------
+    match /candidates/{candidateId} {
+
+      allow read: if signedIn();
+
+      // 提名：只能以自己的身分提名，票數必須從 0 開始
+      allow create: if signedIn()
+        && request.resource.data.nominatorId == request.auth.uid
+        && request.resource.data.voteCount == 0
+        && request.resource.data.targetId is string
+        && request.resource.data.targetName is string
+        && request.resource.data.animalZh is string
+        && request.resource.data.animalZh.size() > 0
+        && request.resource.data.animalZh.size() <= 30
+        // 不能提名自己（想拉票也得有人幫你）
+        && request.resource.data.targetId != request.auth.uid
+        // 圖片：外部連結或使用者上傳的壓縮圖，上傳圖限制 700KB 以內
+        && (
+             (request.resource.data.imageUrl is string
+               && request.resource.data.imageUrl.size() <= 2000)
+             ||
+             (request.resource.data.imageData is string
+               && request.resource.data.imageData.size() <= 700000)
+           );
+
+      // 更新：唯一允許的變更是票數 ±1，而且必須伴隨對應的投票紀錄。
+      // getAfter() 會看「這批寫入完成後」的狀態，所以前端必須用 batch 一次送出，
+      // 只改 counter 卻不建投票紀錄的請求會被擋掉。
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['voteCount'])
+        && (
+             // 投票：+1，且投票紀錄存在且屬於本人
+             (request.resource.data.voteCount == resource.data.voteCount + 1
+               && getAfter(/databases/$(database)/documents/votes/$(candidateId + '_' + request.auth.uid)).data.uid == request.auth.uid)
+             ||
+             // 取消投票：-1，且投票紀錄已被刪除
+             (request.resource.data.voteCount == resource.data.voteCount - 1
+               && resource.data.voteCount > 0
+               && !existsAfter(/databases/$(database)/documents/votes/$(candidateId + '_' + request.auth.uid)))
+           );
+
+      // 只有提名者本人可以撤回自己的提名
+      allow delete: if signedIn() && resource.data.nominatorId == request.auth.uid;
+    }
+
+    // ---------- 投票紀錄 ----------
+    // doc id 固定為 {candidateId}_{uid}，天生就一人一票，
+    // 想重複投票會撞到同一個 doc id。
+    match /votes/{voteId} {
+
+      allow read: if signedIn();
+
+      allow create: if signedIn()
+        && voteId == request.resource.data.candidateId + '_' + request.auth.uid
+        && request.resource.data.uid == request.auth.uid;
+
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+
+      // 投票紀錄不允許修改，只能建立或刪除
+      allow update: if false;
+    }
+
+    // 其他路徑一律拒絕
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

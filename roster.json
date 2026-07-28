@@ -1,0 +1,1588 @@
+{
+ "generatedAt": "2026-07-28",
+ "count": 226,
+ "people": [
+  {
+   "id": 200,
+   "name": "AbbyKM Ku",
+   "dept": "Delivery-Management",
+   "ext": "329",
+   "extUnique": true
+  },
+  {
+   "id": 146,
+   "name": "AdonisYC Chang",
+   "dept": "Client Cell - Adonis_Management",
+   "ext": "120",
+   "extUnique": true
+  },
+  {
+   "id": 168,
+   "name": "AdrinYH Liao",
+   "dept": "Creative-Staff",
+   "ext": "652",
+   "extUnique": true
+  },
+  {
+   "id": 58,
+   "name": "AliciaPL Chen",
+   "dept": "Administration ＆ Group Affairs",
+   "ext": "295",
+   "extUnique": true
+  },
+  {
+   "id": 18,
+   "name": "AlisonYS Hung",
+   "dept": "Creative-Staff",
+   "ext": "474",
+   "extUnique": true
+  },
+  {
+   "id": 51,
+   "name": "AllenYC Yu",
+   "dept": "Talent Resources",
+   "ext": "380",
+   "extUnique": true
+  },
+  {
+   "id": 3,
+   "name": "AllisonCY Chen",
+   "dept": "Client Cell - Lu",
+   "ext": "282",
+   "extUnique": true
+  },
+  {
+   "id": 10,
+   "name": "AmelieJY Chen",
+   "dept": "Client Cell - Maggie - Mazda",
+   "ext": "000",
+   "extUnique": false
+  },
+  {
+   "id": 222,
+   "name": "AmyCY Tsai",
+   "dept": "Delivery-Print ＆ Event Production",
+   "ext": "802",
+   "extUnique": true
+  },
+  {
+   "id": 52,
+   "name": "AmyFF Hsieh",
+   "dept": "Talent Resources",
+   "ext": "367",
+   "extUnique": true
+  },
+  {
+   "id": 176,
+   "name": "AmySF Shih",
+   "dept": "Strategy-Management",
+   "ext": "370",
+   "extUnique": true
+  },
+  {
+   "id": 111,
+   "name": "AmyYM Lu",
+   "dept": "Client Cell - Maggie",
+   "ext": "877",
+   "extUnique": true
+  },
+  {
+   "id": 191,
+   "name": "AndrewYE Hsiung",
+   "dept": "OOne-Martech",
+   "ext": "603",
+   "extUnique": true
+  },
+  {
+   "id": 104,
+   "name": "AndySH Hsu",
+   "dept": "Client Cell - Zoe",
+   "ext": "234",
+   "extUnique": true
+  },
+  {
+   "id": 112,
+   "name": "AngelaYT Hsu",
+   "dept": "Client Cell - Maggie",
+   "ext": "854",
+   "extUnique": true
+  },
+  {
+   "id": 219,
+   "name": "AnitaTW Feng",
+   "dept": "Delivery-Digital",
+   "ext": "755",
+   "extUnique": true
+  },
+  {
+   "id": 224,
+   "name": "AnniePS Chung",
+   "dept": "Delivery-Procurement",
+   "ext": "739",
+   "extUnique": true
+  },
+  {
+   "id": 135,
+   "name": "AshleyTA Lu",
+   "dept": "Client Cell - Adonis",
+   "ext": "144",
+   "extUnique": true
+  },
+  {
+   "id": 15,
+   "name": "AUCY Chang",
+   "dept": "Creative-Staff",
+   "ext": "634",
+   "extUnique": true
+  },
+  {
+   "id": 163,
+   "name": "AuroraTH Chou",
+   "dept": "Creative-Staff",
+   "ext": "678",
+   "extUnique": true
+  },
+  {
+   "id": 141,
+   "name": "BellaYH Huang",
+   "dept": "Client Cell - Adonis",
+   "ext": "150",
+   "extUnique": true
+  },
+  {
+   "id": 39,
+   "name": "BelleSF Huang",
+   "dept": "Finance-Staff",
+   "ext": "322",
+   "extUnique": true
+  },
+  {
+   "id": 134,
+   "name": "BelleYY Ke",
+   "dept": "Client Cell - Adonis",
+   "ext": "148",
+   "extUnique": true
+  },
+  {
+   "id": 14,
+   "name": "BellKC Chen",
+   "dept": "Creative-Staff",
+   "ext": "257",
+   "extUnique": true
+  },
+  {
+   "id": 11,
+   "name": "BettyYJ Su",
+   "dept": "Client Cell - Adonis",
+   "ext": "000",
+   "extUnique": false
+  },
+  {
+   "id": 27,
+   "name": "BreeCH Chung",
+   "dept": "Delivery-Moving Image",
+   "ext": "756",
+   "extUnique": true
+  },
+  {
+   "id": 127,
+   "name": "BrianJF Lee",
+   "dept": "Client Cell - Maggie - Mazda",
+   "ext": "835",
+   "extUnique": true
+  },
+  {
+   "id": 164,
+   "name": "BryanCC Shen",
+   "dept": "Creative-Staff",
+   "ext": "674",
+   "extUnique": true
+  },
+  {
+   "id": 195,
+   "name": "BryanDS Yu",
+   "dept": "OOne-Experience Project Management",
+   "ext": "285",
+   "extUnique": true
+  },
+  {
+   "id": 12,
+   "name": "CandyYY Wang",
+   "dept": "Client Cell - Adonis",
+   "ext": "585",
+   "extUnique": true
+  },
+  {
+   "id": 54,
+   "name": "CarolKL Chen",
+   "dept": "Talent Resources",
+   "ext": "000",
+   "extUnique": false
+  },
+  {
+   "id": 19,
+   "name": "Cathy Chang",
+   "dept": "Strategy-Staff",
+   "ext": "255",
+   "extUnique": true
+  },
+  {
+   "id": 23,
+   "name": "CathyCC Wu",
+   "dept": "OOne-Experience Project Management",
+   "ext": "000",
+   "extUnique": false
+  },
+  {
+   "id": 109,
+   "name": "CathyYC Shih",
+   "dept": "Client Cell - Zoe",
+   "ext": "212",
+   "extUnique": true
+  },
+  {
+   "id": 179,
+   "name": "ChaossCC Huang",
+   "dept": "Strategy-Staff",
+   "ext": "373",
+   "extUnique": true
+  },
+  {
+   "id": 74,
+   "name": "CharleneTN Kuo",
+   "dept": "Client Cell - Lu",
+   "ext": "222",
+   "extUnique": true
+  },
+  {
+   "id": 185,
+   "name": "CharlieCA Huang",
+   "dept": "OOne-Social",
+   "ext": "476",
+   "extUnique": true
+  },
+  {
+   "id": 184,
+   "name": "CharlotteSH Wang",
+   "dept": "Experience-Performance ＆ Media​",
+   "ext": "602",
+   "extUnique": true
+  },
+  {
+   "id": 78,
+   "name": "CherryY Su",
+   "dept": "Client Cell - Lu",
+   "ext": "221",
+   "extUnique": true
+  },
+  {
+   "id": 142,
+   "name": "ChihCF Chen",
+   "dept": "Client Cell - Adonis",
+   "ext": "135",
+   "extUnique": true
+  },
+  {
+   "id": 202,
+   "name": "ChyiFC Lin",
+   "dept": "Delivery-Creative",
+   "ext": "769",
+   "extUnique": true
+  },
+  {
+   "id": 37,
+   "name": "CindyHH Lin",
+   "dept": "Finance-Staff",
+   "ext": "388",
+   "extUnique": true
+  },
+  {
+   "id": 145,
+   "name": "CindyHY Lu",
+   "dept": "Client Cell - Adonis",
+   "ext": "162",
+   "extUnique": true
+  },
+  {
+   "id": 199,
+   "name": "CindyYS Hsu",
+   "dept": "OOne-Consulting",
+   "ext": "642",
+   "extUnique": true
+  },
+  {
+   "id": 30,
+   "name": "ClaireJY Yu",
+   "dept": "Delivery-Digital",
+   "ext": "741",
+   "extUnique": true
+  },
+  {
+   "id": 76,
+   "name": "ClaraHC Hsu",
+   "dept": "Client Cell - Lu",
+   "ext": "207",
+   "extUnique": true
+  },
+  {
+   "id": 144,
+   "name": "CleoNY Chiu",
+   "dept": "Client Cell - Adonis",
+   "ext": "133",
+   "extUnique": true
+  },
+  {
+   "id": 103,
+   "name": "DaisyCY Lin",
+   "dept": "Client Cell - Zoe",
+   "ext": "228",
+   "extUnique": true
+  },
+  {
+   "id": 1,
+   "name": "DanielGH Lee",
+   "dept": "Group Executive",
+   "ext": "200",
+   "extUnique": true
+  },
+  {
+   "id": 105,
+   "name": "DanielTT Tseng",
+   "dept": "Client Cell - Zoe",
+   "ext": "227",
+   "extUnique": true
+  },
+  {
+   "id": 187,
+   "name": "DavidJT Wang",
+   "dept": "OOne-Martech",
+   "ext": "609",
+   "extUnique": true
+  },
+  {
+   "id": 129,
+   "name": "DeanYT Chung",
+   "dept": "Client Cell - Maggie - Mazda",
+   "ext": "811",
+   "extUnique": true
+  },
+  {
+   "id": 84,
+   "name": "DerrickCW Tseng",
+   "dept": "Client Cell - Derrick",
+   "ext": "205",
+   "extUnique": true
+  },
+  {
+   "id": 5,
+   "name": "DorisHT Cheng",
+   "dept": "Client Cell - Maggie",
+   "ext": "818",
+   "extUnique": true
+  },
+  {
+   "id": 173,
+   "name": "EastonTN Hu",
+   "dept": "Creative-Staff",
+   "ext": "242",
+   "extUnique": true
+  },
+  {
+   "id": 148,
+   "name": "EJEJ Chiang",
+   "dept": "Creative-Staff",
+   "ext": "342",
+   "extUnique": true
+  },
+  {
+   "id": 131,
+   "name": "ElaineTY Huang",
+   "dept": "Client Cell - Adonis",
+   "ext": "145",
+   "extUnique": true
+  },
+  {
+   "id": 85,
+   "name": "EllaMP Hsu",
+   "dept": "Client Cell - Derrick",
+   "ext": "241",
+   "extUnique": true
+  },
+  {
+   "id": 152,
+   "name": "EllenHY Lin",
+   "dept": "Creative-Staff",
+   "ext": "254",
+   "extUnique": true
+  },
+  {
+   "id": 72,
+   "name": "EllenYT Liu",
+   "dept": "Client Cell - Lu",
+   "ext": "210",
+   "extUnique": true
+  },
+  {
+   "id": 53,
+   "name": "EllieYT Wu",
+   "dept": "Talent Resources",
+   "ext": "626",
+   "extUnique": true
+  },
+  {
+   "id": 114,
+   "name": "ElsieCY Li",
+   "dept": "Client Cell - Maggie",
+   "ext": "833",
+   "extUnique": true
+  },
+  {
+   "id": 196,
+   "name": "ElynnPH Li",
+   "dept": "OOne-Experience Project Management",
+   "ext": "639",
+   "extUnique": true
+  },
+  {
+   "id": 139,
+   "name": "EmilyYH Lin",
+   "dept": "Client Cell - Adonis",
+   "ext": "551",
+   "extUnique": true
+  },
+  {
+   "id": 181,
+   "name": "EnnioCW Hsiao",
+   "dept": "Strategy-Staff",
+   "ext": "336",
+   "extUnique": true
+  },
+  {
+   "id": 122,
+   "name": "EricHY Lin",
+   "dept": "Client Cell - Maggie",
+   "ext": "804",
+   "extUnique": true
+  },
+  {
+   "id": 186,
+   "name": "EricKY Hsiao",
+   "dept": "OOne-Martech",
+   "ext": "604",
+   "extUnique": true
+  },
+  {
+   "id": 214,
+   "name": "EricTC Lin",
+   "dept": "Delivery-Moving Image",
+   "ext": "767",
+   "extUnique": true
+  },
+  {
+   "id": 182,
+   "name": "EthanCW Lee",
+   "dept": "Strategy-Staff",
+   "ext": "365",
+   "extUnique": true
+  },
+  {
+   "id": 209,
+   "name": "EvaPY Chou",
+   "dept": "Delivery-Moving Image",
+   "ext": "749",
+   "extUnique": true
+  },
+  {
+   "id": 26,
+   "name": "EveyY Kung",
+   "dept": "Delivery-Creative",
+   "ext": "791",
+   "extUnique": true
+  },
+  {
+   "id": 29,
+   "name": "EvieIC Chen",
+   "dept": "Delivery-Digital",
+   "ext": "790",
+   "extUnique": true
+  },
+  {
+   "id": 171,
+   "name": "EvonneYC Ling",
+   "dept": "Creative-Staff",
+   "ext": "346",
+   "extUnique": true
+  },
+  {
+   "id": 96,
+   "name": "EvonYF Yang",
+   "dept": "Client Cell - Derrick",
+   "ext": "256",
+   "extUnique": true
+  },
+  {
+   "id": 33,
+   "name": "FannieYS Chen",
+   "dept": "Finance-Staff",
+   "ext": "309",
+   "extUnique": true
+  },
+  {
+   "id": 194,
+   "name": "FreddyCC Liu",
+   "dept": "OOne-Experience Design",
+   "ext": "695",
+   "extUnique": true
+  },
+  {
+   "id": 65,
+   "name": "Fy Lu",
+   "dept": "Client Cell - Lu",
+   "ext": "206",
+   "extUnique": true
+  },
+  {
+   "id": 44,
+   "name": "GaryCL Chien",
+   "dept": "Finance-Staff",
+   "ext": "304",
+   "extUnique": true
+  },
+  {
+   "id": 147,
+   "name": "GiantTC Kung",
+   "dept": "Creative-Management",
+   "ext": "275",
+   "extUnique": true
+  },
+  {
+   "id": 67,
+   "name": "GinoCY Kuo",
+   "dept": "Client Cell - Lu",
+   "ext": "237",
+   "extUnique": true
+  },
+  {
+   "id": 119,
+   "name": "GloriaYH Wu",
+   "dept": "Client Cell - Maggie",
+   "ext": "845",
+   "extUnique": true
+  },
+  {
+   "id": 143,
+   "name": "HaileyHH Wang",
+   "dept": "Client Cell - Adonis",
+   "ext": "123",
+   "extUnique": true
+  },
+  {
+   "id": 175,
+   "name": "HaileyYS Lin",
+   "dept": "Creative-Staff",
+   "ext": "345",
+   "extUnique": true
+  },
+  {
+   "id": 166,
+   "name": "HankTH Hsieh",
+   "dept": "Creative-Staff",
+   "ext": "348",
+   "extUnique": true
+  },
+  {
+   "id": 210,
+   "name": "HansCM Huang",
+   "dept": "Delivery-Moving Image",
+   "ext": "773",
+   "extUnique": true
+  },
+  {
+   "id": 193,
+   "name": "HarveyWL Huang",
+   "dept": "OOne-Experience Design",
+   "ext": "663",
+   "extUnique": true
+  },
+  {
+   "id": 123,
+   "name": "HohoKH Liu",
+   "dept": "Client Cell - Maggie",
+   "ext": "898",
+   "extUnique": true
+  },
+  {
+   "id": 118,
+   "name": "HsuehchunHC Wang",
+   "dept": "Client Cell - Maggie",
+   "ext": "857",
+   "extUnique": false
+  },
+  {
+   "id": 225,
+   "name": "IreneTY Chen",
+   "dept": "Delivery-Procurement",
+   "ext": "764",
+   "extUnique": true
+  },
+  {
+   "id": 41,
+   "name": "IrisCY Chen",
+   "dept": "Finance-Staff",
+   "ext": "316",
+   "extUnique": true
+  },
+  {
+   "id": 180,
+   "name": "IsaYC Sung",
+   "dept": "Strategy-Staff",
+   "ext": "371",
+   "extUnique": true
+  },
+  {
+   "id": 138,
+   "name": "IzumiCF Hsieh",
+   "dept": "Client Cell - Adonis",
+   "ext": "161",
+   "extUnique": true
+  },
+  {
+   "id": 206,
+   "name": "JackCC Mai",
+   "dept": "Delivery-Creative",
+   "ext": "745",
+   "extUnique": true
+  },
+  {
+   "id": 86,
+   "name": "JamesCH Han",
+   "dept": "Client Cell - Derrick",
+   "ext": "225",
+   "extUnique": true
+  },
+  {
+   "id": 117,
+   "name": "JanCW Ng",
+   "dept": "Client Cell - Maggie",
+   "ext": "815",
+   "extUnique": true
+  },
+  {
+   "id": 31,
+   "name": "JaneSC Tsai",
+   "dept": "Delivery-PMO",
+   "ext": "731",
+   "extUnique": true
+  },
+  {
+   "id": 61,
+   "name": "JanetCL Tsai",
+   "dept": "Regional代收付",
+   "ext": "219",
+   "extUnique": false
+  },
+  {
+   "id": 2,
+   "name": "Janny Chou",
+   "dept": "Group Executive-Staff",
+   "ext": "323",
+   "extUnique": true
+  },
+  {
+   "id": 116,
+   "name": "JasonCC Chou",
+   "dept": "Client Cell - Maggie",
+   "ext": "864",
+   "extUnique": true
+  },
+  {
+   "id": 34,
+   "name": "JasonSY Ding",
+   "dept": "Finance-Staff",
+   "ext": "315",
+   "extUnique": true
+  },
+  {
+   "id": 137,
+   "name": "JeanSC Hsieh",
+   "dept": "Client Cell - Adonis",
+   "ext": "129",
+   "extUnique": true
+  },
+  {
+   "id": 207,
+   "name": "JeffreyCC Liu",
+   "dept": "Delivery-Creative",
+   "ext": "796",
+   "extUnique": true
+  },
+  {
+   "id": 172,
+   "name": "JennieWC Hsieh",
+   "dept": "Creative-Staff",
+   "ext": "620",
+   "extUnique": true
+  },
+  {
+   "id": 107,
+   "name": "JennyCY Lin",
+   "dept": "Client Cell - Zoe",
+   "ext": "248",
+   "extUnique": true
+  },
+  {
+   "id": 79,
+   "name": "JesseFY Lin",
+   "dept": "Client Cell - Lu",
+   "ext": "667",
+   "extUnique": true
+  },
+  {
+   "id": 158,
+   "name": "JimiCH Hsieh",
+   "dept": "Creative-Staff",
+   "ext": "334",
+   "extUnique": true
+  },
+  {
+   "id": 190,
+   "name": "JinCA Yang",
+   "dept": "OOne-Martech",
+   "ext": "610",
+   "extUnique": true
+  },
+  {
+   "id": 13,
+   "name": "JinnyCL Chang",
+   "dept": "Client Cell - Adonis",
+   "ext": "000",
+   "extUnique": false
+  },
+  {
+   "id": 47,
+   "name": "JodieCW Chang",
+   "dept": "Finance-Staff",
+   "ext": "301",
+   "extUnique": true
+  },
+  {
+   "id": 28,
+   "name": "JohnnyYT Tseng",
+   "dept": "Delivery-Digital",
+   "ext": "751",
+   "extUnique": true
+  },
+  {
+   "id": 216,
+   "name": "JonTC Cheng",
+   "dept": "Delivery-Moving Image",
+   "ext": "327",
+   "extUnique": true
+  },
+  {
+   "id": 77,
+   "name": "JosephineCH Wang",
+   "dept": "Client Cell - Lu",
+   "ext": "245",
+   "extUnique": true
+  },
+  {
+   "id": 101,
+   "name": "JosephWL Lee",
+   "dept": "Client Cell - Zoe",
+   "ext": "223",
+   "extUnique": true
+  },
+  {
+   "id": 75,
+   "name": "JuneCY Lee",
+   "dept": "Client Cell - Lu",
+   "ext": "226",
+   "extUnique": true
+  },
+  {
+   "id": 211,
+   "name": "JunIC Chen",
+   "dept": "Delivery-Moving Image",
+   "ext": "775",
+   "extUnique": true
+  },
+  {
+   "id": 60,
+   "name": "JunoYC Lai",
+   "dept": "Administration ＆ Group Affairs",
+   "ext": "361",
+   "extUnique": true
+  },
+  {
+   "id": 159,
+   "name": "KaijungKJ Teng",
+   "dept": "Creative-Staff",
+   "ext": "437",
+   "extUnique": true
+  },
+  {
+   "id": 203,
+   "name": "KarenYC Hsieh",
+   "dept": "Delivery-Creative",
+   "ext": "774",
+   "extUnique": true
+  },
+  {
+   "id": 66,
+   "name": "KateYY Lee",
+   "dept": "Client Cell - Lu",
+   "ext": "218",
+   "extUnique": true
+  },
+  {
+   "id": 223,
+   "name": "KathyWH Chen",
+   "dept": "Delivery-Print ＆ Event Production",
+   "ext": "789",
+   "extUnique": true
+  },
+  {
+   "id": 130,
+   "name": "KenTY Wu",
+   "dept": "Client Cell - Maggie - Mazda",
+   "ext": "853",
+   "extUnique": true
+  },
+  {
+   "id": 218,
+   "name": "KevinCC Hsia",
+   "dept": "Delivery-Digital",
+   "ext": "752",
+   "extUnique": true
+  },
+  {
+   "id": 108,
+   "name": "KevinCH Ho",
+   "dept": "Client Cell - Zoe",
+   "ext": "265",
+   "extUnique": true
+  },
+  {
+   "id": 213,
+   "name": "LarryLC Tsao",
+   "dept": "Delivery-Moving Image",
+   "ext": "799",
+   "extUnique": true
+  },
+  {
+   "id": 178,
+   "name": "Leah Chiou",
+   "dept": "Strategy-Staff",
+   "ext": "375",
+   "extUnique": true
+  },
+  {
+   "id": 90,
+   "name": "LeewangYC Lin",
+   "dept": "Client Cell - Derrick",
+   "ext": "214",
+   "extUnique": true
+  },
+  {
+   "id": 73,
+   "name": "LeoKC Lin",
+   "dept": "Client Cell - Lu",
+   "ext": "202",
+   "extUnique": true
+  },
+  {
+   "id": 115,
+   "name": "LeoL Huang",
+   "dept": "Client Cell - Maggie",
+   "ext": "830",
+   "extUnique": true
+  },
+  {
+   "id": 94,
+   "name": "LinusSL Tsai",
+   "dept": "Client Cell - Derrick",
+   "ext": "283",
+   "extUnique": true
+  },
+  {
+   "id": 102,
+   "name": "LipingLP Shih",
+   "dept": "Client Cell - Zoe",
+   "ext": "267",
+   "extUnique": true
+  },
+  {
+   "id": 150,
+   "name": "LisaLH HSU",
+   "dept": "Creative-Staff",
+   "ext": "278",
+   "extUnique": true
+  },
+  {
+   "id": 205,
+   "name": "LouisHL Wang",
+   "dept": "Delivery-Creative",
+   "ext": "480",
+   "extUnique": true
+  },
+  {
+   "id": 63,
+   "name": "LucyHJ Chen",
+   "dept": "Regional代收付",
+   "ext": "303",
+   "extUnique": true
+  },
+  {
+   "id": 153,
+   "name": "LukaCT Chen",
+   "dept": "Creative-Staff",
+   "ext": "279",
+   "extUnique": true
+  },
+  {
+   "id": 43,
+   "name": "LukeHC Hsu",
+   "dept": "Finance-Staff",
+   "ext": "330",
+   "extUnique": true
+  },
+  {
+   "id": 189,
+   "name": "LuluFJ Ho",
+   "dept": "OOne-Martech",
+   "ext": "606",
+   "extUnique": true
+  },
+  {
+   "id": 136,
+   "name": "LuluL Hsu",
+   "dept": "Client Cell - Adonis",
+   "ext": "154",
+   "extUnique": true
+  },
+  {
+   "id": 20,
+   "name": "LydiaLT Chou",
+   "dept": "Strategy-Staff",
+   "ext": "382",
+   "extUnique": true
+  },
+  {
+   "id": 38,
+   "name": "LynnWL Jang",
+   "dept": "Finance-Staff",
+   "ext": "318",
+   "extUnique": true
+  },
+  {
+   "id": 215,
+   "name": "LynnYL Zhang",
+   "dept": "Delivery-Moving Image",
+   "ext": "734",
+   "extUnique": true
+  },
+  {
+   "id": 128,
+   "name": "MaggieHC Huang",
+   "dept": "Client Cell - Maggie - Mazda",
+   "ext": "862",
+   "extUnique": true
+  },
+  {
+   "id": 110,
+   "name": "MaggieMY Chao",
+   "dept": "Client Cell - Maggie",
+   "ext": "868",
+   "extUnique": true
+  },
+  {
+   "id": 82,
+   "name": "MaggieY Lin",
+   "dept": "Client Cell - Lu",
+   "ext": "219",
+   "extUnique": false
+  },
+  {
+   "id": 169,
+   "name": "MaiWL Hsu",
+   "dept": "Creative-Staff",
+   "ext": "281",
+   "extUnique": true
+  },
+  {
+   "id": 212,
+   "name": "MarcoCA Chung",
+   "dept": "Delivery-Moving Image",
+   "ext": "768",
+   "extUnique": true
+  },
+  {
+   "id": 40,
+   "name": "MargaretYH Tseng",
+   "dept": "Finance-Staff",
+   "ext": "319",
+   "extUnique": true
+  },
+  {
+   "id": 156,
+   "name": "MarvinYW Liu",
+   "dept": "Creative-Staff",
+   "ext": "484",
+   "extUnique": true
+  },
+  {
+   "id": 149,
+   "name": "MattCL Wu",
+   "dept": "Creative-Staff",
+   "ext": "276",
+   "extUnique": true
+  },
+  {
+   "id": 125,
+   "name": "MichelleYY Chen",
+   "dept": "Client Cell - Maggie - Mazda",
+   "ext": "866",
+   "extUnique": true
+  },
+  {
+   "id": 49,
+   "name": "Micki Chang",
+   "dept": "Talent Resources",
+   "ext": "363",
+   "extUnique": true
+  },
+  {
+   "id": 46,
+   "name": "MilaCS Yang",
+   "dept": "Finance-Staff",
+   "ext": "313",
+   "extUnique": true
+  },
+  {
+   "id": 204,
+   "name": "MilaCY Yeh",
+   "dept": "Delivery-Creative",
+   "ext": "794",
+   "extUnique": true
+  },
+  {
+   "id": 151,
+   "name": "MingCM Lee",
+   "dept": "Creative-Staff",
+   "ext": "354",
+   "extUnique": true
+  },
+  {
+   "id": 167,
+   "name": "MomoHF Mao",
+   "dept": "Creative-Staff",
+   "ext": "291",
+   "extUnique": true
+  },
+  {
+   "id": 32,
+   "name": "MonicaYC Lee",
+   "dept": "Finance-Management",
+   "ext": "268",
+   "extUnique": true
+  },
+  {
+   "id": 113,
+   "name": "NickyYL Chen",
+   "dept": "Client Cell - Maggie",
+   "ext": "822",
+   "extUnique": true
+  },
+  {
+   "id": 97,
+   "name": "NitaSY Wu",
+   "dept": "Client Cell - Derrick",
+   "ext": "232",
+   "extUnique": true
+  },
+  {
+   "id": 99,
+   "name": "OliviaMT Chen",
+   "dept": "Client Cell - Derrick",
+   "ext": "525",
+   "extUnique": true
+  },
+  {
+   "id": 140,
+   "name": "OliviaMW Wu",
+   "dept": "Client Cell - Adonis",
+   "ext": "196",
+   "extUnique": true
+  },
+  {
+   "id": 81,
+   "name": "OllieYY Kim",
+   "dept": "Client Cell - Lu",
+   "ext": "208",
+   "extUnique": true
+  },
+  {
+   "id": 132,
+   "name": "OniWT Huang",
+   "dept": "Client Cell - Adonis",
+   "ext": "155",
+   "extUnique": true
+  },
+  {
+   "id": 170,
+   "name": "OrcaML Yu",
+   "dept": "Creative-Staff",
+   "ext": "339",
+   "extUnique": true
+  },
+  {
+   "id": 55,
+   "name": "Paddy Chiang",
+   "dept": "Administration ＆ Group Affairs",
+   "ext": "358",
+   "extUnique": true
+  },
+  {
+   "id": 95,
+   "name": "PaulWP Huang",
+   "dept": "Client Cell - Derrick",
+   "ext": "297",
+   "extUnique": true
+  },
+  {
+   "id": 98,
+   "name": "PeggyPY Ho",
+   "dept": "Client Cell - Derrick",
+   "ext": "233",
+   "extUnique": true
+  },
+  {
+   "id": 22,
+   "name": "PennyTL Tseng",
+   "dept": "OOne-Martech",
+   "ext": "650",
+   "extUnique": true
+  },
+  {
+   "id": 6,
+   "name": "PhoebeHF Hu",
+   "dept": "Client Cell - Maggie",
+   "ext": "805",
+   "extUnique": true
+  },
+  {
+   "id": 80,
+   "name": "RaymondRM Yamsuan",
+   "dept": "Client Cell - Lu",
+   "ext": "335",
+   "extUnique": true
+  },
+  {
+   "id": 45,
+   "name": "RebeccaYC Yu",
+   "dept": "Finance-Staff",
+   "ext": "311",
+   "extUnique": true
+  },
+  {
+   "id": 220,
+   "name": "RebeccaYT Chen",
+   "dept": "Delivery-PMO",
+   "ext": "512",
+   "extUnique": true
+  },
+  {
+   "id": 155,
+   "name": "RhymeTT Hsieh",
+   "dept": "Creative-Staff",
+   "ext": "438",
+   "extUnique": true
+  },
+  {
+   "id": 126,
+   "name": "RinaJY Huang",
+   "dept": "Client Cell - Maggie - Mazda",
+   "ext": "816",
+   "extUnique": true
+  },
+  {
+   "id": 21,
+   "name": "RioTY Ho",
+   "dept": "Experience-Performance ＆ Media​",
+   "ext": "000",
+   "extUnique": false
+  },
+  {
+   "id": 62,
+   "name": "RitaPR Shen",
+   "dept": "Regional代收付",
+   "ext": "306",
+   "extUnique": true
+  },
+  {
+   "id": 92,
+   "name": "Ritarw Kang",
+   "dept": "Client Cell - Derrick",
+   "ext": "262",
+   "extUnique": true
+  },
+  {
+   "id": 50,
+   "name": "RobertCL Kung",
+   "dept": "Talent Resources",
+   "ext": "369",
+   "extUnique": true
+  },
+  {
+   "id": 8,
+   "name": "SafinWL Zheng",
+   "dept": "Client Cell - Maggie",
+   "ext": "846",
+   "extUnique": true
+  },
+  {
+   "id": 208,
+   "name": "SaiYC Guo",
+   "dept": "Delivery-Creative",
+   "ext": "757",
+   "extUnique": true
+  },
+  {
+   "id": 91,
+   "name": "SamHC Chiang",
+   "dept": "Client Cell - Derrick",
+   "ext": "271",
+   "extUnique": true
+  },
+  {
+   "id": 217,
+   "name": "ScottieKH Yang",
+   "dept": "Delivery-Moving Image",
+   "ext": "326",
+   "extUnique": true
+  },
+  {
+   "id": 59,
+   "name": "SeanHA Chiu",
+   "dept": "Administration ＆ Group Affairs",
+   "ext": "376",
+   "extUnique": true
+  },
+  {
+   "id": 106,
+   "name": "SereneSY Chang",
+   "dept": "Client Cell - Zoe",
+   "ext": "269",
+   "extUnique": true
+  },
+  {
+   "id": 160,
+   "name": "ShanYS Chen",
+   "dept": "Creative-Staff",
+   "ext": "641",
+   "extUnique": true
+  },
+  {
+   "id": 24,
+   "name": "ShinyaCC Kang",
+   "dept": "Delivery-Creative",
+   "ext": "726",
+   "extUnique": true
+  },
+  {
+   "id": 201,
+   "name": "ShokeiHH Liu",
+   "dept": "Delivery-Creative",
+   "ext": "676",
+   "extUnique": true
+  },
+  {
+   "id": 87,
+   "name": "ShowminSM Li",
+   "dept": "Client Cell - Derrick",
+   "ext": "243",
+   "extUnique": true
+  },
+  {
+   "id": 35,
+   "name": "SindyHJ Chen",
+   "dept": "Finance-Staff",
+   "ext": "332",
+   "extUnique": true
+  },
+  {
+   "id": 161,
+   "name": "SofieCY Lin",
+   "dept": "Creative-Staff",
+   "ext": "645",
+   "extUnique": true
+  },
+  {
+   "id": 36,
+   "name": "SophiaYH Chang",
+   "dept": "Finance-Staff",
+   "ext": "317",
+   "extUnique": true
+  },
+  {
+   "id": 56,
+   "name": "SpeyCH Chou",
+   "dept": "Administration ＆ Group Affairs",
+   "ext": "356",
+   "extUnique": true
+  },
+  {
+   "id": 88,
+   "name": "SunnyC Huang",
+   "dept": "Client Cell - Derrick",
+   "ext": "215",
+   "extUnique": true
+  },
+  {
+   "id": 16,
+   "name": "SunnyYW Liu",
+   "dept": "Creative-Staff",
+   "ext": "492",
+   "extUnique": true
+  },
+  {
+   "id": 68,
+   "name": "TaylorYC Hung",
+   "dept": "Client Cell - Lu",
+   "ext": "377",
+   "extUnique": true
+  },
+  {
+   "id": 198,
+   "name": "TiffanyTN Yang",
+   "dept": "OOne-Consulting",
+   "ext": "617",
+   "extUnique": true
+  },
+  {
+   "id": 121,
+   "name": "TiffanyYT Ho",
+   "dept": "Client Cell - Maggie",
+   "ext": "807",
+   "extUnique": true
+  },
+  {
+   "id": 120,
+   "name": "TinaCJ Hsu",
+   "dept": "Client Cell - Maggie",
+   "ext": "857",
+   "extUnique": false
+  },
+  {
+   "id": 9,
+   "name": "TinaJH Chang",
+   "dept": "Client Cell - Maggie - Mazda",
+   "ext": "840",
+   "extUnique": true
+  },
+  {
+   "id": 226,
+   "name": "TonyHT Lo",
+   "dept": "Verticurl",
+   "ext": "592",
+   "extUnique": true
+  },
+  {
+   "id": 4,
+   "name": "TracyCY Kao",
+   "dept": "Client Cell - Derrick",
+   "ext": "000",
+   "extUnique": false
+  },
+  {
+   "id": 165,
+   "name": "TungT Wang",
+   "dept": "Creative-Staff",
+   "ext": "395",
+   "extUnique": true
+  },
+  {
+   "id": 93,
+   "name": "UniYN Liu",
+   "dept": "Client Cell - Derrick",
+   "ext": "231",
+   "extUnique": true
+  },
+  {
+   "id": 48,
+   "name": "ValerySC Chen",
+   "dept": "Talent Resources",
+   "ext": "201",
+   "extUnique": true
+  },
+  {
+   "id": 7,
+   "name": "VenusCH Wu",
+   "dept": "Client Cell - Maggie",
+   "ext": "806",
+   "extUnique": true
+  },
+  {
+   "id": 183,
+   "name": "VeronicaYT Kuo",
+   "dept": "OOne-Management",
+   "ext": "600",
+   "extUnique": true
+  },
+  {
+   "id": 188,
+   "name": "VicCG Lin",
+   "dept": "OOne-Martech",
+   "ext": "689",
+   "extUnique": true
+  },
+  {
+   "id": 89,
+   "name": "VickeyCC Lee",
+   "dept": "Client Cell - Derrick",
+   "ext": "263",
+   "extUnique": true
+  },
+  {
+   "id": 17,
+   "name": "WarrenCH Wang",
+   "dept": "Creative-Staff",
+   "ext": "386",
+   "extUnique": true
+  },
+  {
+   "id": 83,
+   "name": "WatsonWC Liao",
+   "dept": "Client Cell - Lu",
+   "ext": "236",
+   "extUnique": true
+  },
+  {
+   "id": 25,
+   "name": "WeeziWY Lin",
+   "dept": "Delivery-Creative",
+   "ext": "784",
+   "extUnique": true
+  },
+  {
+   "id": 71,
+   "name": "WenWC Huang",
+   "dept": "Client Cell - Lu",
+   "ext": "264",
+   "extUnique": true
+  },
+  {
+   "id": 192,
+   "name": "WinnieWY Lee",
+   "dept": "OOne-Business Development",
+   "ext": "343",
+   "extUnique": true
+  },
+  {
+   "id": 64,
+   "name": "WinnieYH Chen",
+   "dept": "Regional代收付",
+   "ext": "391",
+   "extUnique": true
+  },
+  {
+   "id": 57,
+   "name": "YamiYM Tseng",
+   "dept": "Administration ＆ Group Affairs",
+   "ext": "357",
+   "extUnique": true
+  },
+  {
+   "id": 197,
+   "name": "YawenYW Huang",
+   "dept": "OOne-Consulting",
+   "ext": "690",
+   "extUnique": true
+  },
+  {
+   "id": 157,
+   "name": "YishiunYS Chen",
+   "dept": "Creative-Staff",
+   "ext": "252",
+   "extUnique": true
+  },
+  {
+   "id": 221,
+   "name": "YoungCH Chao",
+   "dept": "Delivery-Print ＆ Event Production",
+   "ext": "779",
+   "extUnique": true
+  },
+  {
+   "id": 154,
+   "name": "YoyoYW Hsu",
+   "dept": "Creative-Staff",
+   "ext": "277",
+   "extUnique": true
+  },
+  {
+   "id": 177,
+   "name": "Yuh-Pey Hsu",
+   "dept": "Strategy-Staff",
+   "ext": "353",
+   "extUnique": true
+  },
+  {
+   "id": 42,
+   "name": "YvonneHC Chang",
+   "dept": "Finance-Staff",
+   "ext": "355",
+   "extUnique": true
+  },
+  {
+   "id": 124,
+   "name": "ZoeCY Huang",
+   "dept": "Client Cell - Maggie",
+   "ext": "823",
+   "extUnique": true
+  },
+  {
+   "id": 174,
+   "name": "ZoeiJH Lee",
+   "dept": "Creative-Staff",
+   "ext": "384",
+   "extUnique": true
+  },
+  {
+   "id": 100,
+   "name": "ZoeJY Chuang",
+   "dept": "Client Cell - Zoe",
+   "ext": "240",
+   "extUnique": true
+  },
+  {
+   "id": 133,
+   "name": "ZoeYJ Liao",
+   "dept": "Client Cell - Adonis",
+   "ext": "147",
+   "extUnique": true
+  },
+  {
+   "id": 162,
+   "name": "ZolaCN Wu",
+   "dept": "Creative-Staff",
+   "ext": "630",
+   "extUnique": true
+  },
+  {
+   "id": 70,
+   "name": "ZomaLL Lin",
+   "dept": "Client Cell - Lu",
+   "ext": "209",
+   "extUnique": true
+  },
+  {
+   "id": 69,
+   "name": "ZoraCY Lin",
+   "dept": "Client Cell - Lu",
+   "ext": "213",
+   "extUnique": true
+  }
+ ]
+}
