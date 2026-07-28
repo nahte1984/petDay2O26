@@ -147,6 +147,13 @@
     border-top: 1px solid var(--line); z-index: 0;
   }
   .divider span { background: var(--paper); padding: 0 12px; position: relative; }
+
+  /* 致命錯誤橫幅：程式整段掛掉時唯一還會出現的東西 */
+  #fatal {
+    display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+    background: #a01020; color: #fff; padding: 12px 16px;
+    font-size: 13px; line-height: 1.5; font-family: ui-monospace, monospace;
+  }
 </style>
 </head>
 <body>
@@ -242,9 +249,48 @@
   </div>
 </div>
 
+<!-- 攔截 module 載入／解析錯誤。module 內部的 SyntaxError 沒辦法用 try/catch 抓，
+     只能靠這支傳統 script 在外面聽，不然畫面會完全沒反應、也不知道錯在哪。 -->
+<div id="fatal"></div>
+<script>
+  window.addEventListener('error', function (e) {
+    var el = document.getElementById('fatal');
+    if (!el) return;
+    var where = e.filename ? ' （' + e.filename.split('/').pop() +
+                (e.lineno ? ':' + e.lineno : '') + '）' : '';
+    el.style.display = 'block';
+    el.textContent = '程式載入失敗：' + (e.message || '未知錯誤') + where;
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    var el = document.getElementById('fatal');
+    if (!el) return;
+    el.style.display = 'block';
+    el.textContent = '執行錯誤：' + (e.reason && (e.reason.code || e.reason.message) || e.reason);
+  });
+</script>
+
 <script type="module">
-import { FIREBASE_CONFIG, PEXELS_API_KEY, EVENT } from './config.js';
+// 用命名空間匯入，這樣 config.js 不管寫 FIREBASE_CONFIG 還是 firebaseConfig 都能用。
+// （從 Firebase Console 複製貼上時很容易把名稱換掉，之前就是這樣壞的。）
+import * as CFG from './config.js';
 import { localTranslate, normalizeAnimal } from './animals.js';
+
+const FIREBASE_CONFIG = CFG.FIREBASE_CONFIG || CFG.firebaseConfig || CFG.default;
+const PEXELS_API_KEY = CFG.PEXELS_API_KEY || CFG.pexelsApiKey || 'PASTE_';
+const EVENT = Object.assign({
+  title: '奧美寵物日',
+  subtitle: '你的同事長得像哪隻動物？',
+  maxVotesPerUser: 5,
+  maxNominationsPerUser: 3,
+  votingOpen: true,
+}, CFG.EVENT || {});
+
+if (!FIREBASE_CONFIG || !FIREBASE_CONFIG.apiKey) {
+  const el = document.getElementById('fatal');
+  el.style.display = 'block';
+  el.textContent = 'config.js 裡找不到 Firebase 設定。請確認有 export firebaseConfig（或 FIREBASE_CONFIG）。';
+  throw new Error('missing firebase config');
+}
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import {
@@ -361,16 +407,30 @@ $('loginForm').addEventListener('submit', async (e) => {
     await signInWithEmailAndPassword(auth, emailFor(person.id), passwordFor(person.id, pin));
   } catch (err) {
     const code = err.code || '';
-    let text = '登入失敗，請再試一次。';
+    // 這些訊息刻意分得很細，因為設定沒做完跟密碼打錯，從使用者角度看是一樣的。
+    let text;
     if (code.includes('invalid-credential') || code.includes('wrong-password') ||
-        code.includes('user-not-found') || code.includes('invalid-login')) {
-      text = '身分證後 4 碼不正確。';
+        code.includes('invalid-login')) {
+      text = '身分證後 4 碼不正確。（若是所有人都登不進去，可能是還沒執行建帳號腳本）';
+    } else if (code.includes('user-not-found')) {
+      text = `找不到 ${person.name} 的帳號，請先執行 node seed-users.mjs --commit 建立員工帳號。`;
+    } else if (code.includes('operation-not-allowed')) {
+      text = 'Firebase 尚未啟用「電子郵件/密碼」登入方式，請到 Authentication → Sign-in method 開啟。';
+    } else if (code.includes('configuration-not-found')) {
+      text = 'Firebase 專案還沒啟用 Authentication，請到 Console 的 Authentication 頁面按「開始使用」。';
+    } else if (code.includes('unauthorized-domain')) {
+      text = '這個網域未被授權，請到 Authentication → Settings → 已授權網域，加入 nahte1984.github.io。';
+    } else if (code.includes('api-key-not-valid') || code.includes('invalid-api-key')) {
+      text = 'config.js 的 apiKey 不正確，請重新從 Firebase Console 複製。';
     } else if (code.includes('too-many-requests')) {
       text = '嘗試次數過多，請等幾分鐘再試。';
     } else if (code.includes('network')) {
       text = '網路連線有問題，請檢查後再試。';
+    } else {
+      text = `登入失敗（${code || err.message}）`;
     }
     show(msg, text, 'err');
+    console.error('[login]', code, err);
   } finally {
     btn.disabled = false;
     btn.textContent = '登入';

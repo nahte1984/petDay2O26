@@ -12,6 +12,9 @@ export const firebaseConfig = {
   measurementId: "G-C2FPXNW34E"
 };
 
+// index.html 兩種名稱都吃得下，這行只是保險，不要刪。
+export const FIREBASE_CONFIG = firebaseConfig;
+
 // https://www.pexels.com/api/ 免費申請，每月 2 萬次查詢。
 // 這把 key 會出現在前端原始碼裡。Pexels 不介意（它只能搜圖，不能改任何東西），
 // 但如果被濫用可以隨時到後台重新產生。
