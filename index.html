@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>奧美寵物日投票</title>
+<style>
+  :root {
+    --red: #e01a2b;
+    --ink: #16161a;
+    --paper: #fbf9f6;
+    --line: #e3ded6;
+    --muted: #7b7670;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Helvetica Neue", "PingFang TC", "Noto Sans TC",
+                 "Microsoft JhengHei", sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 18px 80px; }
+
+  /* ---------- 通用元件 ---------- */
+  h1 { font-size: 26px; letter-spacing: -.02em; margin: 0 0 4px; }
+  h2 { font-size: 17px; margin: 0 0 12px; }
+  .sub { color: var(--muted); font-size: 14px; margin: 0 0 24px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin: 0 0 6px; }
+  input[type=text], input[type=password], input[type=tel], select {
+    width: 100%; padding: 12px 14px; font-size: 16px; font-family: inherit;
+    border: 1.5px solid var(--line); border-radius: 10px;
+    background: #fff; color: var(--ink); outline: none;
+  }
+  input:focus, select:focus { border-color: var(--ink); }
+  .field { margin-bottom: 16px; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 5px; }
+  button {
+    font-family: inherit; font-size: 15px; font-weight: 600;
+    border-radius: 10px; border: 1.5px solid var(--ink);
+    padding: 12px 18px; cursor: pointer;
+    background: var(--ink); color: #fff; transition: opacity .15s;
+  }
+  button:hover:not(:disabled) { opacity: .82; }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  button.ghost { background: transparent; color: var(--ink); }
+  button.small { padding: 8px 13px; font-size: 13px; }
+  button.block { width: 100%; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .msg {
+    padding: 11px 14px; border-radius: 10px; font-size: 14px;
+    margin: 14px 0; display: none;
+  }
+  .msg.show { display: block; }
+  .msg.err { background: #fdecec; color: #a01020; }
+  .msg.ok  { background: #eaf6ec; color: #1c6b31; }
+  .spinner {
+    display: inline-block; width: 14px; height: 14px; vertical-align: -2px;
+    border: 2px solid currentColor; border-top-color: transparent;
+    border-radius: 50%; animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- 登入 ---------- */
+  #loginView { max-width: 380px; margin: 0 auto; padding-top: 14vh; }
+  .logo {
+    display: inline-block; background: var(--red); color: #fff;
+    font-weight: 800; font-size: 12px; letter-spacing: .18em;
+    padding: 5px 10px; border-radius: 4px; margin-bottom: 18px;
+  }
+  #whoPicker { display: none; }
+
+  /* ---------- App 外框 ---------- */
+  #appView { display: none; }
+  header.bar {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(251,249,246,.93); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 18px; margin-bottom: 18px;
+  }
+  .bar .me { font-size: 13px; color: var(--muted); margin-left: auto; }
+  .tabs { display: flex; gap: 6px; margin: 0 0 20px; }
+  .tabs button {
+    flex: 1; background: transparent; color: var(--muted);
+    border: 1.5px solid var(--line);
+  }
+  .tabs button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .panel { display: none; }
+  .panel.on { display: block; }
+
+  /* ---------- 候選卡 ---------- */
+  .card {
+    background: #fff; border: 1px solid var(--line);
+    border-radius: var(--radius); overflow: hidden; margin-bottom: 14px;
+    display: flex; gap: 0;
+  }
+  .card .thumb {
+    width: 118px; min-width: 118px; background: #f0ece6;
+    background-size: cover; background-position: center;
+  }
+  .card .body { padding: 13px 15px; flex: 1; min-width: 0; }
+  .card .target { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+  .card .animal { font-size: 14px; margin-top: 1px; }
+  .card .animal b { color: var(--red); }
+  .card .meta { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .card .foot {
+    display: flex; align-items: center; gap: 10px; margin-top: 11px;
+  }
+  .count { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .count span { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .voted { background: var(--red) !important; border-color: var(--red) !important; color: #fff !important; }
+  .rank {
+    position: absolute; margin: 8px; background: var(--ink); color: #fff;
+    font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 20px;
+  }
+  .empty {
+    text-align: center; color: var(--muted); font-size: 14px;
+    padding: 50px 20px; border: 1.5px dashed var(--line); border-radius: var(--radius);
+  }
+
+  /* ---------- 提名表單 ---------- */
+  .preview {
+    display: none; margin-top: 14px; border: 1px solid var(--line);
+    border-radius: var(--radius); overflow: hidden; background: #fff;
+  }
+  .preview.show { display: block; }
+  .preview img { width: 100%; display: block; max-height: 320px; object-fit: cover; }
+  .preview .pfoot {
+    padding: 10px 13px; display: flex; align-items: center;
+    gap: 10px; font-size: 12px; color: var(--muted);
+  }
+  .upload-btn {
+    display: inline-block; padding: 12px 18px; font-size: 15px; font-weight: 600;
+    border: 1.5px solid var(--ink); border-radius: 10px; cursor: pointer;
+  }
+  input[type=file] { display: none; }
+  .divider {
+    text-align: center; font-size: 12px; color: var(--muted);
+    margin: 16px 0; position: relative;
+  }
+  .divider::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 50%;
+    border-top: 1px solid var(--line); z-index: 0;
+  }
+  .divider span { background: var(--paper); padding: 0 12px; position: relative; }
+</style>
+</head>
+<body>
+
+<!-- ==================== 登入 ==================== -->
+<div class="wrap" id="loginView">
+  <div class="logo">OGILVY</div>
+  <h1 id="loginTitle">奧美寵物日</h1>
+  <p class="sub" id="loginSub">你的同事長得像哪隻動物？</p>
+
+  <form id="loginForm" autocomplete="off">
+    <div class="field">
+      <label for="who">分機或英文姓名</label>
+      <input type="text" id="who" list="nameList" placeholder="例：329 或 Abby Ku" required>
+      <datalist id="nameList"></datalist>
+      <div class="hint">分機三碼，或直接打英文名字（可以只打一部分）</div>
+    </div>
+
+    <div class="field" id="whoPicker">
+      <label for="whoSelect">這支分機有多位同事，請選擇你是誰</label>
+      <select id="whoSelect"></select>
+    </div>
+
+    <div class="field">
+      <label for="pin">身分證後 4 碼</label>
+      <input type="password" id="pin" inputmode="numeric" pattern="[0-9]*"
+             maxlength="4" placeholder="••••" required>
+    </div>
+
+    <div class="msg err" id="loginMsg"></div>
+    <button class="block" id="loginBtn" type="submit">登入</button>
+  </form>
+</div>
+
+<!-- ==================== 主程式 ==================== -->
+<div id="appView">
+  <header class="bar">
+    <div class="logo" style="margin:0;font-size:11px;">OGILVY</div>
+    <strong style="font-size:15px;">寵物日</strong>
+    <span class="me" id="meLabel"></span>
+    <button class="ghost small" id="logoutBtn">登出</button>
+  </header>
+
+  <div class="wrap">
+    <div class="tabs">
+      <button class="on" data-tab="list">候選排行</button>
+      <button data-tab="new">我要提名</button>
+    </div>
+
+    <!-- ----- 排行 ----- -->
+    <section class="panel on" id="tab-list">
+      <p class="sub" id="listSummary" style="margin-bottom:16px;"></p>
+      <div id="cards"></div>
+    </section>
+
+    <!-- ----- 提名 ----- -->
+    <section class="panel" id="tab-new">
+      <h2>提名一位同事</h2>
+
+      <div class="field">
+        <label for="target">被提名的同事（英文姓名）</label>
+        <input type="text" id="target" list="nameList2" placeholder="開始打字會自動出現名單">
+        <datalist id="nameList2"></datalist>
+        <div class="hint" id="targetHint">不能提名自己喔</div>
+      </div>
+
+      <div class="field">
+        <label for="animal">他長得像什麼動物？</label>
+        <div class="row">
+          <input type="text" id="animal" placeholder="例：柴犬、水豚、企鵝" style="flex:1;min-width:180px;">
+          <button class="small" id="searchBtn" type="button" style="padding:12px 16px;">找圖片</button>
+        </div>
+        <div class="hint">中文英文都可以。找不到滿意的圖可以按「換一張」，或自己上傳。</div>
+      </div>
+
+      <div class="divider"><span>或</span></div>
+      <label class="upload-btn" for="fileInput">從相簿上傳圖片</label>
+      <input type="file" id="fileInput" accept="image/*">
+
+      <div class="msg" id="nomMsg"></div>
+
+      <div class="preview" id="preview">
+        <img id="previewImg" alt="候選動物圖片">
+        <div class="pfoot">
+          <span id="previewCredit"></span>
+          <button class="ghost small" id="rerollBtn" type="button" style="margin-left:auto;">換一張</button>
+        </div>
+      </div>
+
+      <button class="block" id="submitBtn" style="margin-top:18px;" disabled>送出提名</button>
+      <p class="hint" id="quotaHint" style="text-align:center;"></p>
+    </section>
+  </div>
+</div>
+
+<script type="module">
+import { FIREBASE_CONFIG, PEXELS_API_KEY, EVENT } from './config.js';
+import { localTranslate, normalizeAnimal } from './animals.js';
+
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import {
+  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import {
+  getFirestore, collection, doc, getDoc, setDoc, deleteDoc,
+  onSnapshot, query, where, orderBy, runTransaction, serverTimestamp,
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const app = initializeApp(FIREBASE_CONFIG);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const $ = (id) => document.getElementById(id);
+const show = (el, text, kind) => {
+  el.textContent = text;
+  el.className = `msg show ${kind || ''}`;
+};
+const hide = (el) => { el.className = 'msg'; };
+
+// ==================== 員工名單 ====================
+let ROSTER = [];
+let BY_ID = new Map();
+
+async function loadRoster() {
+  const res = await fetch('./roster.json', { cache: 'no-cache' });
+  if (!res.ok) throw new Error('讀不到員工名單 roster.json');
+  const data = await res.json();
+  ROSTER = data.people;
+  BY_ID = new Map(ROSTER.map((p) => [String(p.id), p]));
+
+  // 兩個 datalist 都填上名單（登入用、提名用）
+  const opts = ROSTER.map((p) => {
+    const o = document.createElement('option');
+    o.value = p.name;
+    o.label = p.dept;
+    return o;
+  });
+  $('nameList').append(...opts.map((o) => o.cloneNode(true)));
+  $('nameList2').append(...opts);
+}
+
+// 把使用者輸入（分機或姓名）解析成候選員工清單
+function resolveWho(input) {
+  const q = String(input || '').trim();
+  if (!q) return [];
+
+  // 純數字 → 當成分機
+  if (/^\d{1,4}$/.test(q)) {
+    const ext = q.padStart(3, '0');
+    return ROSTER.filter((p) => p.ext === ext);
+  }
+
+  const lower = q.toLowerCase();
+  const exact = ROSTER.filter((p) => p.name.toLowerCase() === lower);
+  if (exact.length) return exact;
+
+  // 部分比對：「Abby」也能找到「AbbyKM Ku」
+  const loose = ROSTER.filter((p) => {
+    const n = p.name.toLowerCase();
+    return n.includes(lower) || n.replace(/[^a-z]/g, '').includes(lower.replace(/[^a-z]/g, ''));
+  });
+  return loose;
+}
+
+// ==================== 登入 ====================
+const emailFor = (id) => `u${id}@petday.local`;
+const passwordFor = (id, pin) => `${id}-${pin}`;
+
+$('who').addEventListener('input', () => {
+  $('whoPicker').style.display = 'none';
+  hide($('loginMsg'));
+});
+
+$('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = $('loginBtn');
+  const msg = $('loginMsg');
+  hide(msg);
+
+  const pin = $('pin').value.replace(/\D/g, '');
+  if (pin.length !== 4) return show(msg, '身分證後 4 碼要輸入 4 個數字。', 'err');
+
+  // 已經在下拉選單選好人的情況
+  let person = null;
+  if ($('whoPicker').style.display === 'block') {
+    person = BY_ID.get($('whoSelect').value);
+  } else {
+    const found = resolveWho($('who').value);
+
+    if (found.length === 0) {
+      return show(msg, '查不到這個分機或姓名，請確認後再試。', 'err');
+    }
+    if (found.length > 1) {
+      // 分機重複（000 / 219 / 857）或姓名打得太短 → 讓使用者自己選
+      const sel = $('whoSelect');
+      sel.innerHTML = '';
+      found.forEach((p) => {
+        const o = document.createElement('option');
+        o.value = String(p.id);
+        o.textContent = `${p.name} — ${p.dept}（分機 ${p.ext}）`;
+        sel.append(o);
+      });
+      $('whoPicker').style.display = 'block';
+      return show(msg, `找到 ${found.length} 位符合的同事，請在上方選出你自己再按登入。`, 'err');
+    }
+    person = found[0];
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> 登入中';
+  try {
+    await signInWithEmailAndPassword(auth, emailFor(person.id), passwordFor(person.id, pin));
+  } catch (err) {
+    const code = err.code || '';
+    let text = '登入失敗，請再試一次。';
+    if (code.includes('invalid-credential') || code.includes('wrong-password') ||
+        code.includes('user-not-found') || code.includes('invalid-login')) {
+      text = '身分證後 4 碼不正確。';
+    } else if (code.includes('too-many-requests')) {
+      text = '嘗試次數過多，請等幾分鐘再試。';
+    } else if (code.includes('network')) {
+      text = '網路連線有問題，請檢查後再試。';
+    }
+    show(msg, text, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '登入';
+  }
+});
+
+$('logoutBtn').addEventListener('click', () => signOut(auth));
+
+// ==================== 登入狀態 ====================
+let ME = null;
+let unsubCandidates = null;
+let unsubMyVotes = null;
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    ME = BY_ID.get(user.uid);
+    if (!ME) { signOut(auth); return; }
+    $('loginView').style.display = 'none';
+    $('appView').style.display = 'block';
+    $('meLabel').textContent = `${ME.name}`;
+    $('pin').value = '';
+    startListening();
+  } else {
+    ME = null;
+    unsubCandidates?.(); unsubMyVotes?.();
+    unsubCandidates = unsubMyVotes = null;
+    $('loginView').style.display = 'block';
+    $('appView').style.display = 'none';
+  }
+});
+
+// ==================== 分頁切換 ====================
+document.querySelectorAll('.tabs button').forEach((b) => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.tabs button').forEach((x) => x.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach((x) => x.classList.remove('on'));
+    b.classList.add('on');
+    $(`tab-${b.dataset.tab}`).classList.add('on');
+  });
+});
+
+// ==================== 候選列表與投票 ====================
+let CANDIDATES = [];
+let MY_VOTES = new Set();
+
+function startListening() {
+  unsubCandidates = onSnapshot(
+    query(collection(db, 'candidates'), orderBy('voteCount', 'desc')),
+    (snap) => {
+      CANDIDATES = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      render();
+    },
+    (err) => {
+      $('cards').innerHTML = `<div class="empty">讀取候選名單失敗：${err.code || err.message}</div>`;
+    }
+  );
+
+  unsubMyVotes = onSnapshot(
+    query(collection(db, 'votes'), where('uid', '==', ME.id + '')),
+    (snap) => {
+      MY_VOTES = new Set(snap.docs.map((d) => d.data().candidateId));
+      render();
+    }
+  );
+}
+
+function imageSrcOf(c) {
+  return c.imageData || c.imageUrl || '';
+}
+
+function render() {
+  const box = $('cards');
+
+  // 提名被撤回後，投票紀錄會變成孤兒，不該再佔用票數額度
+  const liveIds = new Set(CANDIDATES.map((c) => c.id));
+  const usedVotes = [...MY_VOTES].filter((id) => liveIds.has(id)).length;
+  const votesLeft = EVENT.maxVotesPerUser > 0
+    ? EVENT.maxVotesPerUser - usedVotes : Infinity;
+
+  $('listSummary').textContent = EVENT.maxVotesPerUser > 0
+    ? `目前 ${CANDIDATES.length} 位候選人 · 你已投 ${usedVotes} 票，還剩 ${Math.max(0, votesLeft)} 票`
+    : `目前 ${CANDIDATES.length} 位候選人 · 你已投 ${usedVotes} 票`;
+
+  const mine = CANDIDATES.filter((c) => c.nominatorId === ME.id + '').length;
+  $('quotaHint').textContent = EVENT.maxNominationsPerUser > 0
+    ? `你已提名 ${mine} / ${EVENT.maxNominationsPerUser} 筆`
+    : '';
+
+  if (!CANDIDATES.length) {
+    box.innerHTML = '<div class="empty">還沒有人提名。<br>切到「我要提名」開第一槍吧。</div>';
+    return;
+  }
+
+  box.innerHTML = '';
+  CANDIDATES.forEach((c, i) => {
+    const votedThis = MY_VOTES.has(c.id);
+    const outOfVotes = !votedThis && votesLeft <= 0;
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.position = 'relative';
+
+    if (i < 3 && c.voteCount > 0) {
+      const r = document.createElement('div');
+      r.className = 'rank';
+      r.textContent = `#${i + 1}`;
+      card.append(r);
+    }
+
+    const thumb = document.createElement('div');
+    thumb.className = 'thumb';
+    const src = imageSrcOf(c);
+    if (src) thumb.style.backgroundImage = `url("${src.replace(/"/g, '%22')}")`;
+
+    const body = document.createElement('div');
+    body.className = 'body';
+
+    const t = document.createElement('div');
+    t.className = 'target';
+    t.textContent = c.targetName;
+
+    const a = document.createElement('div');
+    a.className = 'animal';
+    a.append(document.createTextNode('長得像 '));
+    const strong = document.createElement('b');
+    strong.textContent = c.animalZh;
+    a.append(strong);
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    meta.textContent = `由 ${c.nominatorName} 提名`;
+
+    const foot = document.createElement('div');
+    foot.className = 'foot';
+    const cnt = document.createElement('div');
+    cnt.className = 'count';
+    cnt.textContent = c.voteCount;
+    const unit = document.createElement('span');
+    unit.textContent = ' 票';
+    cnt.append(unit);
+
+    const vb = document.createElement('button');
+    vb.className = 'small' + (votedThis ? ' voted' : ' ghost');
+    vb.textContent = votedThis ? '已投票 ✓' : '投他一票';
+    vb.style.marginLeft = 'auto';
+    vb.disabled = !EVENT.votingOpen || outOfVotes;
+    if (outOfVotes) vb.title = '你的票數已用完，可以先取消其他票';
+    vb.addEventListener('click', () => toggleVote(c, vb));
+
+    foot.append(cnt, vb);
+
+    if (c.nominatorId === ME.id + '') {
+      const del = document.createElement('button');
+      del.className = 'ghost small';
+      del.textContent = '撤回';
+      del.style.borderColor = 'var(--line)';
+      del.addEventListener('click', async () => {
+        if (!confirm(`確定撤回「${c.targetName} 像 ${c.animalZh}」這筆提名？`)) return;
+        try { await deleteDoc(doc(db, 'candidates', c.id)); }
+        catch (err) { alert('撤回失敗：' + (err.code || err.message)); }
+      });
+      foot.append(del);
+    }
+
+    body.append(t, a, meta, foot);
+    card.append(thumb, body);
+    box.append(card);
+  });
+}
+
+// 投票／取消投票：用 transaction 讓「投票紀錄」與「票數」同一批寫入，
+// 這樣 firestore.rules 裡的 getAfter() 才能驗證兩者一致，防止有人直接改票數。
+async function toggleVote(c, btn) {
+  if (!EVENT.votingOpen) return;
+  const voteId = `${c.id}_${ME.id}`;
+  const voteRef = doc(db, 'votes', voteId);
+  const candRef = doc(db, 'candidates', c.id);
+  const removing = MY_VOTES.has(c.id);
+
+  btn.disabled = true;
+  try {
+    await runTransaction(db, async (tx) => {
+      const candSnap = await tx.get(candRef);
+      if (!candSnap.exists()) throw new Error('這筆提名已經被撤回了');
+      const current = candSnap.data().voteCount || 0;
+
+      if (removing) {
+        tx.delete(voteRef);
+        tx.update(candRef, { voteCount: Math.max(0, current - 1) });
+      } else {
+        tx.set(voteRef, {
+          uid: ME.id + '',
+          candidateId: c.id,
+          createdAt: serverTimestamp(),
+        });
+        tx.update(candRef, { voteCount: current + 1 });
+      }
+    });
+  } catch (err) {
+    alert((removing ? '取消投票' : '投票') + '失敗：' + (err.code || err.message));
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ==================== 圖片搜尋 ====================
+let searchResults = [];   // Pexels 撈回來的候選圖
+let resultIdx = 0;
+let picked = null;        // { imageUrl } 或 { imageData }
+let pickedAnimalEn = '';
+
+// 中文 → 英文：先查內建表，查不到才用 MyMemory（免費、免 key）
+async function toEnglish(zh) {
+  const local = localTranslate(zh);
+  if (local) return local;
+  try {
+    const url = 'https://api.mymemory.translated.net/get?q=' +
+      encodeURIComponent(zh) + '&langpair=zh-TW|en';
+    const r = await fetch(url);
+    const j = await r.json();
+    const t = j?.responseData?.translatedText;
+    if (t && !/^\s*$/.test(t) && !/NO QUERY|MYMEMORY WARNING/i.test(t)) {
+      return t.toLowerCase().replace(/[^a-z\s'-]/g, '').trim();
+    }
+  } catch (_) { /* 翻譯掛掉就算了，下面直接用原字串試 */ }
+  return zh;
+}
+
+async function pexelsSearch(en) {
+  const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(en)}` +
+              `&per_page=15&orientation=square`;
+  const r = await fetch(url, { headers: { Authorization: PEXELS_API_KEY } });
+  if (!r.ok) throw new Error(`Pexels 回應 ${r.status}`);
+  const j = await r.json();
+  return (j.photos || []).map((p) => ({
+    url: p.src.large || p.src.medium,
+    credit: `Photo by ${p.photographer} / Pexels`,
+  }));
+}
+
+function showPreview(src, credit) {
+  $('previewImg').src = src;
+  $('previewCredit').textContent = credit || '你上傳的圖片';
+  $('preview').classList.add('show');
+  $('rerollBtn').style.display = searchResults.length > 1 ? '' : 'none';
+  updateSubmitState();
+}
+
+$('searchBtn').addEventListener('click', async () => {
+  const zh = normalizeAnimal($('animal').value);
+  const msg = $('nomMsg');
+  hide(msg);
+  if (!zh) return show(msg, '先告訴我是什麼動物。', 'err');
+  if (PEXELS_API_KEY.startsWith('PASTE_')) {
+    return show(msg, '還沒設定 Pexels API key，請先填 config.js。', 'err');
+  }
+
+  const btn = $('searchBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+  try {
+    const en = await toEnglish(zh);
+    pickedAnimalEn = en;
+    searchResults = await pexelsSearch(en);
+    if (!searchResults.length) {
+      // 有些冷門動物加上 animal 這個字就找得到了
+      searchResults = await pexelsSearch(en + ' animal');
+    }
+    if (!searchResults.length) {
+      picked = null;
+      $('preview').classList.remove('show');
+      updateSubmitState();
+      return show(msg, `找不到「${zh}」的圖片（英文用 "${en}" 搜的）。換個說法或自己上傳一張吧。`, 'err');
+    }
+    // 從結果中隨機撈一張
+    resultIdx = Math.floor(Math.random() * searchResults.length);
+    picked = { imageUrl: searchResults[resultIdx].url };
+    showPreview(picked.imageUrl, searchResults[resultIdx].credit);
+    show(msg, `用 "${en}" 搜到 ${searchResults.length} 張，隨機挑了一張。`, 'ok');
+  } catch (err) {
+    show(msg, '圖片搜尋失敗：' + err.message, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '找圖片';
+  }
+});
+
+$('rerollBtn').addEventListener('click', () => {
+  if (searchResults.length < 2) return;
+  let next = resultIdx;
+  while (next === resultIdx) next = Math.floor(Math.random() * searchResults.length);
+  resultIdx = next;
+  picked = { imageUrl: searchResults[resultIdx].url };
+  showPreview(picked.imageUrl, searchResults[resultIdx].credit);
+});
+
+// ---------- 自行上傳 ----------
+// 不用 Firebase Storage（新專案要付費方案），改成壓縮後直接存進 Firestore 文件。
+// 800px / JPEG 0.8 大約 60–120KB，遠低於 1MB 的文件上限。
+function compressImage(file, maxSide = 800, quality = 0.8) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('讀取檔案失敗'));
+    reader.onload = () => { img.src = reader.result; };
+    img.onerror = () => reject(new Error('這個檔案不是有效的圖片'));
+    img.onload = () => {
+      const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+      const cv = document.createElement('canvas');
+      cv.width = Math.round(img.width * scale);
+      cv.height = Math.round(img.height * scale);
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+
+      let q = quality;
+      let out = cv.toDataURL('image/jpeg', q);
+      // 萬一還是太大（超過規則允許的 700KB）就再降畫質
+      while (out.length > 650000 && q > 0.35) {
+        q -= 0.12;
+        out = cv.toDataURL('image/jpeg', q);
+      }
+      resolve(out);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+$('fileInput').addEventListener('change', async (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  const msg = $('nomMsg');
+  hide(msg);
+  if (!file.type.startsWith('image/')) return show(msg, '請選擇圖片檔。', 'err');
+  try {
+    const dataUrl = await compressImage(file);
+    searchResults = [];
+    picked = { imageData: dataUrl };
+    showPreview(dataUrl, '你上傳的圖片');
+    show(msg, `圖片已壓縮好（約 ${Math.round(dataUrl.length / 1024)} KB）。`, 'ok');
+  } catch (err) {
+    show(msg, err.message, 'err');
+  }
+  e.target.value = '';
+});
+
+// ==================== 送出提名 ====================
+function resolveTarget() {
+  const found = resolveWho($('target').value);
+  if (found.length === 1) return found[0];
+  const exact = found.filter((p) => p.name.toLowerCase() === $('target').value.trim().toLowerCase());
+  return exact.length === 1 ? exact[0] : null;
+}
+
+function updateSubmitState() {
+  const t = resolveTarget();
+  const ok = !!t && t.id !== ME?.id && !!picked && !!normalizeAnimal($('animal').value)
+             && EVENT.votingOpen;
+  $('submitBtn').disabled = !ok;
+
+  const hint = $('targetHint');
+  const raw = $('target').value.trim();
+  if (!raw) hint.textContent = '不能提名自己喔';
+  else if (!t) hint.textContent = '這個名字對不上名單，請從下拉選單挑一位。';
+  else if (t.id === ME?.id) hint.textContent = '不能提名自己 😅 換一位同事吧。';
+  else hint.textContent = `已選：${t.name}（${t.dept}）`;
+}
+
+$('target').addEventListener('input', updateSubmitState);
+$('animal').addEventListener('input', updateSubmitState);
+
+const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9一-鿿]+/g, '-')
+  .replace(/^-|-$/g, '').slice(0, 40);
+
+$('submitBtn').addEventListener('click', async () => {
+  const msg = $('nomMsg');
+  hide(msg);
+  const target = resolveTarget();
+  const animalZh = normalizeAnimal($('animal').value);
+  if (!target || !picked || !animalZh) return;
+
+  const mine = CANDIDATES.filter((c) => c.nominatorId === ME.id + '').length;
+  if (EVENT.maxNominationsPerUser > 0 && mine >= EVENT.maxNominationsPerUser) {
+    return show(msg, `每人最多提名 ${EVENT.maxNominationsPerUser} 筆，你已經用完了。可以先撤回一筆。`, 'err');
+  }
+
+  // doc id 用「被提名人 + 動物」組成，天生擋掉重複提名同一組合
+  const candidateId = `${target.id}_${slug(pickedAnimalEn || animalZh)}`;
+  const btn = $('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> 送出中';
+
+  try {
+    const ref = doc(db, 'candidates', candidateId);
+    const existing = await getDoc(ref);
+    if (existing.exists()) {
+      const e = existing.data();
+      show(msg, `${e.nominatorName} 已經提名過「${e.targetName} 像 ${e.animalZh}」了，` +
+                `到排行榜投他一票就好。`, 'err');
+      return;
+    }
+
+    await setDoc(ref, {
+      nominatorId: ME.id + '',
+      nominatorName: ME.name,
+      targetId: target.id + '',
+      targetName: target.name,
+      targetDept: target.dept,
+      animalZh,
+      animalEn: pickedAnimalEn || '',
+      ...picked,
+      imageCredit: picked.imageUrl ? (searchResults[resultIdx]?.credit || '') : '使用者上傳',
+      voteCount: 0,
+      createdAt: serverTimestamp(),
+    });
+
+    // 清空表單
+    $('target').value = '';
+    $('animal').value = '';
+    $('preview').classList.remove('show');
+    picked = null; searchResults = []; pickedAnimalEn = '';
+    show(msg, '提名成功！切到「候選排行」看看。', 'ok');
+  } catch (err) {
+    show(msg, '提名失敗：' + (err.code || err.message), 'err');
+  } finally {
+    btn.textContent = '送出提名';
+    updateSubmitState();
+  }
+});
+
+// ==================== 啟動 ====================
+(async () => {
+  $('loginTitle').textContent = EVENT.title;
+  $('loginSub').textContent = EVENT.subtitle;
+  document.title = EVENT.title + '投票';
+  try {
+    await loadRoster();
+  } catch (err) {
+    show($('loginMsg'), err.message, 'err');
+    $('loginBtn').disabled = true;
+  }
+  if (!EVENT.votingOpen) {
+    $('submitBtn').disabled = true;
+  }
+})();
+</script>
+</body>
+</html>
