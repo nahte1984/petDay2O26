@@ -618,34 +618,13 @@ function render() {
     unit.textContent = ' 票';
     cnt.append(unit);
 
-    // 票不能取消，所以按鈕要按兩次才會真的投出去，避免手滑。
-    // 第一次按進入「確定投出？」，5 秒沒動作就自動退回。
     const vb = document.createElement('button');
     vb.className = 'small ghost';
     vb.textContent = '投他一票';
     vb.style.marginLeft = 'auto';
     vb.disabled = !EVENT.votingOpen || outOfVotes;
     if (outOfVotes) vb.title = `今天的 ${MAX_VOTES} 票用完了，${resetCountdown()}`;
-
-    let armed = false;
-    let armTimer = null;
-    const disarm = () => {
-      armed = false;
-      clearTimeout(armTimer);
-      vb.className = 'small ghost';
-      vb.textContent = '投他一票';
-    };
-    vb.addEventListener('click', () => {
-      if (!armed) {
-        armed = true;
-        vb.className = 'small voted';
-        vb.textContent = '確定投出？（不能取消）';
-        armTimer = setTimeout(disarm, 5000);
-        return;
-      }
-      disarm();
-      castVote(c, vb);
-    });
+    vb.addEventListener('click', () => castVote(c, vb));
 
     foot.append(cnt, vb);
 
