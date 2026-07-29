@@ -5,19 +5,24 @@ rules_version = '2';
 // 設計重點：整個系統沒有後端（GitHub Pages 是靜態的、Cloud Functions 要付費方案），
 // 所有防作弊都必須在這裡完成。
 //
-// 每日額度（每人每天 10 票、3 次提名，台北時間 0:00 重置）：
-// 規則能保證每筆紀錄的 day 欄位一定等於伺服器當下的日期，無法造假；
-// 「一人一票、不能重複投同一位候選」也是規則層強制的。
-// 但「一天最多幾筆」需要計數，Firestore 規則做不到，這部分由前端把關。
+// 投票規則：每人每天 10 票，可以重複投給同一個人，投出去不能取消。
 //
-// 這個取捨是刻意的：daily cap 只是控制節奏，就算有人開 DevTools 繞過，
-// 他也只能提早投完那些他本來就投得到的候選人，不會投出第二票。
+// 因為「不能取消」，每日額度可以用一個只增不減的計數器完成，
+// 而且是**規則層強制執行**的，開 DevTools 也繞不過。做法是：
 //
-// 部署：Firebase Console → Firestore → 規則 → 貼上 → 發布
-//   或 firebase deploy --only firestore:rules
+//   quotas/{uid}_{今天}     欄位 used，只能 +1，上限 MAX_VOTES_PER_DAY
+//   votes/{uid}_{今天}_{n}  n 必須等於 quota 加完之後的 used
+//
+// 票的 doc id 內含流水號 n，而 n 被綁死在計數器上，所以一天最多只能產生
+// MAX_VOTES_PER_DAY 筆票；重複使用同一個 n 會撞到已存在的文件（只允許 create）。
+//
+// ⚠️ 下面的 MAX_VOTES_PER_DAY 必須與 config.js 的 EVENT.maxVotesPerDay 一致。
+//    改一邊沒改另一邊，使用者會在投到第 11 票時看到權限錯誤。
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function MAX_VOTES_PER_DAY() { return 10; }
 
     function signedIn() {
       return request.auth != null;
@@ -31,13 +36,64 @@ service cloud.firestore {
       return t.year() * 10000 + t.month() * 100 + t.day();
     }
 
+    function quotaPath() {
+      return /databases/$(database)/documents/quotas/$(request.auth.uid + '_' + string(todayInt()));
+    }
+
+    // 這批寫入完成後，我今天總共用掉幾票
+    function usedAfter() {
+      return getAfter(quotaPath()).data.used;
+    }
+
+    // ---------- 每日票數額度 ----------
+    // 一人一天一份。只能加一、不能歸零、不能刪除。
+    match /quotas/{quotaId} {
+
+      allow read: if signedIn() && quotaId == request.auth.uid + '_' + string(todayInt());
+
+      // 今天的第一票
+      allow create: if signedIn()
+        && quotaId == request.auth.uid + '_' + string(todayInt())
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.day == todayInt()
+        && request.resource.data.used == 1;
+
+      // 第 2 票之後：只能 +1，且不能超過上限
+      allow update: if signedIn()
+        && quotaId == request.auth.uid + '_' + string(todayInt())
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used'])
+        && request.resource.data.used == resource.data.used + 1
+        && request.resource.data.used <= MAX_VOTES_PER_DAY();
+
+      // 不能刪掉自己的額度紀錄重來
+      allow delete: if false;
+    }
+
+    // ---------- 投票紀錄 ----------
+    // doc id 是 {uid}_{今天}_{流水號}，流水號必須等於 quota 加完後的值。
+    // 這一條就把「一天最多幾票」鎖死了。
+    match /votes/{voteId} {
+
+      allow read: if signedIn();
+
+      allow create: if signedIn()
+        && voteId == request.auth.uid + '_' + string(todayInt()) + '_' + string(usedAfter())
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.day == todayInt()
+        && request.resource.data.seq == usedAfter()
+        && request.resource.data.candidateId is string;
+
+      // 票投出去就是投出去了
+      allow update, delete: if false;
+    }
+
     // ---------- 候選動物 ----------
     match /candidates/{candidateId} {
 
       allow read: if signedIn();
 
       // 提名：只能以自己的身分提名，票數必須從 0 開始，
-      // 且只能算在「今天」的每日額度上（不能改前端把提名記到別天）
+      // 且只能算在「今天」的每日提名額度上
       allow create: if signedIn()
         && request.resource.data.nominatorId == request.auth.uid
         && request.resource.data.voteCount == 0
@@ -58,42 +114,19 @@ service cloud.firestore {
                && request.resource.data.imageData.size() <= 700000)
            );
 
-      // 更新：唯一允許的變更是票數 ±1，而且必須伴隨對應的投票紀錄。
-      // getAfter() 會看「這批寫入完成後」的狀態，所以前端必須用 batch 一次送出，
-      // 只改 counter 卻不建投票紀錄的請求會被擋掉。
+      // 更新：唯一允許的變更是票數 +1，而且這批寫入裡必須真的有一張
+      // 剛產生、指向這位候選人的票。前端必須用 transaction 一次送出三份文件
+      // （quota、vote、candidate），只改 counter 的請求會被擋掉。
       allow update: if signedIn()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['voteCount'])
-        && (
-             // 投票：+1，且投票紀錄存在且屬於本人
-             (request.resource.data.voteCount == resource.data.voteCount + 1
-               && getAfter(/databases/$(database)/documents/votes/$(candidateId + '_' + request.auth.uid)).data.uid == request.auth.uid)
-             ||
-             // 取消投票：-1，且投票紀錄已被刪除
-             (request.resource.data.voteCount == resource.data.voteCount - 1
-               && resource.data.voteCount > 0
-               && !existsAfter(/databases/$(database)/documents/votes/$(candidateId + '_' + request.auth.uid)))
-           );
+        && request.resource.data.voteCount == resource.data.voteCount + 1
+        && getAfter(/databases/$(database)/documents/votes/$(request.auth.uid + '_' + string(todayInt()) + '_' + string(usedAfter()))).data.candidateId == candidateId;
 
-      // 只有提名者本人可以撤回自己的提名
-      allow delete: if signedIn() && resource.data.nominatorId == request.auth.uid;
-    }
-
-    // ---------- 投票紀錄 ----------
-    // doc id 固定為 {candidateId}_{uid}，天生就一人一票，
-    // 想重複投票會撞到同一個 doc id。
-    match /votes/{voteId} {
-
-      allow read: if signedIn();
-
-      allow create: if signedIn()
-        && voteId == request.resource.data.candidateId + '_' + request.auth.uid
-        && request.resource.data.uid == request.auth.uid
-        && request.resource.data.day == todayInt();
-
-      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
-
-      // 投票紀錄不允許修改，只能建立或刪除
-      allow update: if false;
+      // 提名者可以撤回自己的提名，但已經有人投票就不行了
+      // （不然別人投出去的、無法取消的票會憑空消失）
+      allow delete: if signedIn()
+        && resource.data.nominatorId == request.auth.uid
+        && resource.data.voteCount == 0;
     }
 
     // 其他路徑一律拒絕

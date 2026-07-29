@@ -504,8 +504,11 @@ document.querySelectorAll('.tabs button').forEach((b) => {
 
 // ==================== 候選列表與投票 ====================
 let CANDIDATES = [];
-let MY_VOTES = new Map();   // candidateId → 投票當天的 YYYYMMDD
+let MY_VOTES = [];          // 我投過的每一票 { candidateId, day }，可重複投同一人
 let dayWatcher = null;
+
+const usedToday = () => MY_VOTES.filter((v) => v.day === TODAY).length;
+const myVotesFor = (id) => MY_VOTES.filter((v) => v.candidateId === id).length;
 
 function startListening() {
   unsubCandidates = onSnapshot(
@@ -522,7 +525,10 @@ function startListening() {
   unsubMyVotes = onSnapshot(
     query(collection(db, 'votes'), where('uid', '==', ME.id + '')),
     (snap) => {
-      MY_VOTES = new Map(snap.docs.map((d) => [d.data().candidateId, d.data().day || 0]));
+      MY_VOTES = snap.docs.map((d) => ({
+        candidateId: d.data().candidateId,
+        day: d.data().day || 0,
+      }));
       render();
     }
   );
@@ -543,16 +549,13 @@ function imageSrcOf(c) {
 function render() {
   const box = $('cards');
 
-  // 額度只看「今天」投的票。提名被撤回後投票紀錄會變孤兒，也不該再佔額度。
-  const liveIds = new Set(CANDIDATES.map((c) => c.id));
-  const usedVotes = [...MY_VOTES].filter(
-    ([id, day]) => liveIds.has(id) && day === TODAY
-  ).length;
-  const votesLeft = MAX_VOTES > 0 ? MAX_VOTES - usedVotes : Infinity;
+  // 額度只看「今天」投的票。票不能取消，所以用掉就是用掉了。
+  const used = usedToday();
+  const votesLeft = MAX_VOTES > 0 ? MAX_VOTES - used : Infinity;
 
   $('listSummary').textContent = MAX_VOTES > 0
     ? `目前 ${CANDIDATES.length} 位候選人 · 今天還剩 ${Math.max(0, votesLeft)} / ${MAX_VOTES} 票（${resetCountdown()}）`
-    : `目前 ${CANDIDATES.length} 位候選人 · 你已投 ${MY_VOTES.size} 票`;
+    : `目前 ${CANDIDATES.length} 位候選人 · 你已投 ${MY_VOTES.length} 票`;
 
   const minesToday = CANDIDATES.filter(
     (c) => c.nominatorId === ME.id + '' && c.day === TODAY
@@ -568,8 +571,8 @@ function render() {
 
   box.innerHTML = '';
   CANDIDATES.forEach((c, i) => {
-    const votedThis = MY_VOTES.has(c.id);
-    const outOfVotes = !votedThis && votesLeft <= 0;
+    const myCount = myVotesFor(c.id);
+    const outOfVotes = votesLeft <= 0;
 
     const card = document.createElement('div');
     card.className = 'card';
@@ -603,7 +606,8 @@ function render() {
 
     const meta = document.createElement('div');
     meta.className = 'meta';
-    meta.textContent = `由 ${c.nominatorName} 提名`;
+    meta.textContent = `由 ${c.nominatorName} 提名` +
+      (myCount ? ` · 你投了 ${myCount} 票` : '');
 
     const foot = document.createElement('div');
     foot.className = 'foot';
@@ -614,17 +618,38 @@ function render() {
     unit.textContent = ' 票';
     cnt.append(unit);
 
+    // 票不能取消，所以按鈕要按兩次才會真的投出去，避免手滑。
+    // 第一次按進入「確定投出？」，5 秒沒動作就自動退回。
     const vb = document.createElement('button');
-    vb.className = 'small' + (votedThis ? ' voted' : ' ghost');
-    vb.textContent = votedThis ? '已投票 ✓' : '投他一票';
+    vb.className = 'small ghost';
+    vb.textContent = '投他一票';
     vb.style.marginLeft = 'auto';
     vb.disabled = !EVENT.votingOpen || outOfVotes;
-    if (outOfVotes) vb.title = `今天的 ${MAX_VOTES} 票用完了，${resetCountdown()}。也可以先取消其他票。`;
-    vb.addEventListener('click', () => toggleVote(c, vb));
+    if (outOfVotes) vb.title = `今天的 ${MAX_VOTES} 票用完了，${resetCountdown()}`;
+
+    let armed = false;
+    let armTimer = null;
+    const disarm = () => {
+      armed = false;
+      clearTimeout(armTimer);
+      vb.className = 'small ghost';
+      vb.textContent = '投他一票';
+    };
+    vb.addEventListener('click', () => {
+      if (!armed) {
+        armed = true;
+        vb.className = 'small voted';
+        vb.textContent = '確定投出？（不能取消）';
+        armTimer = setTimeout(disarm, 5000);
+        return;
+      }
+      disarm();
+      castVote(c, vb);
+    });
 
     foot.append(cnt, vb);
 
-    if (c.nominatorId === ME.id + '') {
+    if (c.nominatorId === ME.id + '' && c.voteCount === 0) {
       const del = document.createElement('button');
       del.className = 'ghost small';
       del.textContent = '撤回';
@@ -643,42 +668,61 @@ function render() {
   });
 }
 
-// 投票／取消投票：用 transaction 讓「投票紀錄」與「票數」同一批寫入，
-// 這樣 firestore.rules 裡的 getAfter() 才能驗證兩者一致，防止有人直接改票數。
-async function toggleVote(c, btn) {
+// 投票：一次 transaction 同時寫三份文件，缺一不可——
+//   1. quotas/{我}_{今天}     used +1，規則保證只增不減、上限 10
+//   2. votes/{我}_{今天}_{n}  n 必須等於上面加完的 used，所以一天最多 10 筆
+//   3. candidates/{候選}      voteCount +1，規則會回查第 2 份確實指向這位候選人
+// 這三條綁在一起，「每天 10 票」就是伺服器強制的，前端被改也沒用。
+async function castVote(c, btn) {
   if (!EVENT.votingOpen) return;
-  const voteId = `${c.id}_${ME.id}`;
-  const voteRef = doc(db, 'votes', voteId);
+
+  const day = taipeiDayInt();
+  const quotaRef = doc(db, 'quotas', `${ME.id}_${day}`);
   const candRef = doc(db, 'candidates', c.id);
-  const removing = MY_VOTES.has(c.id);
 
   btn.disabled = true;
   try {
     await runTransaction(db, async (tx) => {
+      const quotaSnap = await tx.get(quotaRef);
       const candSnap = await tx.get(candRef);
       if (!candSnap.exists()) throw new Error('這筆提名已經被撤回了');
-      const current = candSnap.data().voteCount || 0;
 
-      if (removing) {
-        tx.delete(voteRef);
-        tx.update(candRef, { voteCount: Math.max(0, current - 1) });
-      } else {
-        tx.set(voteRef, {
-          uid: ME.id + '',
-          candidateId: c.id,
-          day: taipeiDayInt(),          // 額度歸哪一天，規則會驗證不能造假
-          createdAt: serverTimestamp(),
-        });
-        tx.update(candRef, { voteCount: current + 1 });
+      const used = quotaSnap.exists() ? (quotaSnap.data().used || 0) : 0;
+      if (MAX_VOTES > 0 && used >= MAX_VOTES) {
+        const e = new Error('QUOTA_EXHAUSTED');
+        e.code = 'quota-exhausted';
+        throw e;
       }
+      const seq = used + 1;
+
+      if (quotaSnap.exists()) {
+        tx.update(quotaRef, { used: seq });
+      } else {
+        tx.set(quotaRef, { uid: ME.id + '', day, used: seq });
+      }
+
+      tx.set(doc(db, 'votes', `${ME.id}_${day}_${seq}`), {
+        uid: ME.id + '',
+        day,                      // 額度歸哪一天，規則會驗證不能造假
+        seq,
+        candidateId: c.id,
+        createdAt: serverTimestamp(),
+      });
+
+      tx.update(candRef, { voteCount: (candSnap.data().voteCount || 0) + 1 });
     });
   } catch (err) {
     const code = err.code || '';
-    // 剛好在 0:00 前後送出時，前端算的日期會跟伺服器差一天而被規則擋下
-    const msg = code.includes('permission-denied')
-      ? '剛好跨過午夜了，請重新整理頁面再投一次。'
-      : (code || err.message);
-    alert((removing ? '取消投票' : '投票') + '失敗：' + msg);
+    let text;
+    if (code === 'quota-exhausted') {
+      text = `今天的 ${MAX_VOTES} 票已經投完了，${resetCountdown()}。`;
+    } else if (code.includes('permission-denied')) {
+      // 額度用完（別的分頁投掉了）或剛好跨過午夜，都會落在這裡
+      text = '投票被拒絕：可能是今天的票已投完，或剛好跨過午夜。請重新整理頁面確認。';
+    } else {
+      text = code || err.message;
+    }
+    alert('投票失敗：' + text);
   } finally {
     btn.disabled = false;
   }
