@@ -24,10 +24,15 @@ export const PEXELS_API_KEY = '4HEtQmvVIU15ese2gPl7937eFLAYBlDfoIGplXF3Co1NeJdxJ
 export const EVENT = {
   title: '奧美寵物日',
   subtitle: '你的同事長得像哪隻動物？',
-  // 每人最多可以投幾票（投給不同候選）。設 0 = 無上限。
-  maxVotesPerUser: 5,
-  // 每人最多可以提名幾筆。設 0 = 無上限。
-  maxNominationsPerUser: 3,
+
+  // ── 每日額度，台北時間每天 0:00 自動重置 ──
+  // 每人每天可以投幾票（投給不同候選）。設 0 = 無上限。
+  maxVotesPerDay: 10,
+  // 每人每天最多提名幾筆。設 0 = 無上限。
+  maxNominationsPerDay: 3,
+
+  // 取消投票、撤回提名都會把當天額度還回來。
+
   // 設成 false 就會鎖住提名與投票，只能看結果（活動結束後用）
   votingOpen: true,
 };

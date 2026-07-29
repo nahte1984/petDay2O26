@@ -280,10 +280,40 @@ const PEXELS_API_KEY = CFG.PEXELS_API_KEY || CFG.pexelsApiKey || 'PASTE_';
 const EVENT = Object.assign({
   title: '奧美寵物日',
   subtitle: '你的同事長得像哪隻動物？',
-  maxVotesPerUser: 5,
-  maxNominationsPerUser: 3,
+  maxVotesPerDay: 10,
+  maxNominationsPerDay: 3,
   votingOpen: true,
 }, CFG.EVENT || {});
+
+// 舊版設定用的是「總額度」欄位名，還沒改 config.js 也不會壞
+const MAX_VOTES = EVENT.maxVotesPerDay ?? EVENT.maxVotesPerUser ?? 10;
+const MAX_NOMS = EVENT.maxNominationsPerDay ?? EVENT.maxNominationsPerUser ?? 3;
+
+// ---------- 每日額度的「今天」 ----------
+// 用台北時間（UTC+8）算，不管使用者的裝置時區設成哪裡都一樣，
+// 而且與 firestore.rules 裡的算法一致（規則會拒絕對不上的日期）。
+// 格式是整數 YYYYMMDD，比字串好比較也好排序。
+function taipeiDayInt(d = new Date()) {
+  const t = new Date(d.getTime() + d.getTimezoneOffset() * 60000 + 8 * 3600000);
+  return t.getFullYear() * 10000 + (t.getMonth() + 1) * 100 + t.getDate();
+}
+
+// 距離台北時間下一個 0:00 還有多久
+function msUntilReset(d = new Date()) {
+  const t = new Date(d.getTime() + d.getTimezoneOffset() * 60000 + 8 * 3600000);
+  const next = new Date(t);
+  next.setHours(24, 0, 0, 0);
+  return next - t;
+}
+
+function resetCountdown() {
+  const ms = msUntilReset();
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  return h > 0 ? `${h} 小時 ${m} 分後重置` : `${m} 分後重置`;
+}
+
+let TODAY = taipeiDayInt();
 
 if (!FIREBASE_CONFIG || !FIREBASE_CONFIG.apiKey) {
   const el = document.getElementById('fatal');
@@ -474,7 +504,8 @@ document.querySelectorAll('.tabs button').forEach((b) => {
 
 // ==================== 候選列表與投票 ====================
 let CANDIDATES = [];
-let MY_VOTES = new Set();
+let MY_VOTES = new Map();   // candidateId → 投票當天的 YYYYMMDD
+let dayWatcher = null;
 
 function startListening() {
   unsubCandidates = onSnapshot(
@@ -491,10 +522,18 @@ function startListening() {
   unsubMyVotes = onSnapshot(
     query(collection(db, 'votes'), where('uid', '==', ME.id + '')),
     (snap) => {
-      MY_VOTES = new Set(snap.docs.map((d) => d.data().candidateId));
+      MY_VOTES = new Map(snap.docs.map((d) => [d.data().candidateId, d.data().day || 0]));
       render();
     }
   );
+
+  // 跨過台北時間 0:00 時自動換算新額度，不用叫使用者重新整理
+  clearInterval(dayWatcher);
+  dayWatcher = setInterval(() => {
+    const now = taipeiDayInt();
+    if (now !== TODAY) { TODAY = now; }
+    render();          // 順便讓倒數文字每分鐘更新
+  }, 30000);
 }
 
 function imageSrcOf(c) {
@@ -504,19 +543,22 @@ function imageSrcOf(c) {
 function render() {
   const box = $('cards');
 
-  // 提名被撤回後，投票紀錄會變成孤兒，不該再佔用票數額度
+  // 額度只看「今天」投的票。提名被撤回後投票紀錄會變孤兒，也不該再佔額度。
   const liveIds = new Set(CANDIDATES.map((c) => c.id));
-  const usedVotes = [...MY_VOTES].filter((id) => liveIds.has(id)).length;
-  const votesLeft = EVENT.maxVotesPerUser > 0
-    ? EVENT.maxVotesPerUser - usedVotes : Infinity;
+  const usedVotes = [...MY_VOTES].filter(
+    ([id, day]) => liveIds.has(id) && day === TODAY
+  ).length;
+  const votesLeft = MAX_VOTES > 0 ? MAX_VOTES - usedVotes : Infinity;
 
-  $('listSummary').textContent = EVENT.maxVotesPerUser > 0
-    ? `目前 ${CANDIDATES.length} 位候選人 · 你已投 ${usedVotes} 票，還剩 ${Math.max(0, votesLeft)} 票`
-    : `目前 ${CANDIDATES.length} 位候選人 · 你已投 ${usedVotes} 票`;
+  $('listSummary').textContent = MAX_VOTES > 0
+    ? `目前 ${CANDIDATES.length} 位候選人 · 今天還剩 ${Math.max(0, votesLeft)} / ${MAX_VOTES} 票（${resetCountdown()}）`
+    : `目前 ${CANDIDATES.length} 位候選人 · 你已投 ${MY_VOTES.size} 票`;
 
-  const mine = CANDIDATES.filter((c) => c.nominatorId === ME.id + '').length;
-  $('quotaHint').textContent = EVENT.maxNominationsPerUser > 0
-    ? `你已提名 ${mine} / ${EVENT.maxNominationsPerUser} 筆`
+  const minesToday = CANDIDATES.filter(
+    (c) => c.nominatorId === ME.id + '' && c.day === TODAY
+  ).length;
+  $('quotaHint').textContent = MAX_NOMS > 0
+    ? `今天已提名 ${minesToday} / ${MAX_NOMS} 筆（${resetCountdown()}）`
     : '';
 
   if (!CANDIDATES.length) {
@@ -577,7 +619,7 @@ function render() {
     vb.textContent = votedThis ? '已投票 ✓' : '投他一票';
     vb.style.marginLeft = 'auto';
     vb.disabled = !EVENT.votingOpen || outOfVotes;
-    if (outOfVotes) vb.title = '你的票數已用完，可以先取消其他票';
+    if (outOfVotes) vb.title = `今天的 ${MAX_VOTES} 票用完了，${resetCountdown()}。也可以先取消其他票。`;
     vb.addEventListener('click', () => toggleVote(c, vb));
 
     foot.append(cnt, vb);
@@ -624,13 +666,19 @@ async function toggleVote(c, btn) {
         tx.set(voteRef, {
           uid: ME.id + '',
           candidateId: c.id,
+          day: taipeiDayInt(),          // 額度歸哪一天，規則會驗證不能造假
           createdAt: serverTimestamp(),
         });
         tx.update(candRef, { voteCount: current + 1 });
       }
     });
   } catch (err) {
-    alert((removing ? '取消投票' : '投票') + '失敗：' + (err.code || err.message));
+    const code = err.code || '';
+    // 剛好在 0:00 前後送出時，前端算的日期會跟伺服器差一天而被規則擋下
+    const msg = code.includes('permission-denied')
+      ? '剛好跨過午夜了，請重新整理頁面再投一次。'
+      : (code || err.message);
+    alert((removing ? '取消投票' : '投票') + '失敗：' + msg);
   } finally {
     btn.disabled = false;
   }
@@ -810,9 +858,12 @@ $('submitBtn').addEventListener('click', async () => {
   const animalZh = normalizeAnimal($('animal').value);
   if (!target || !picked || !animalZh) return;
 
-  const mine = CANDIDATES.filter((c) => c.nominatorId === ME.id + '').length;
-  if (EVENT.maxNominationsPerUser > 0 && mine >= EVENT.maxNominationsPerUser) {
-    return show(msg, `每人最多提名 ${EVENT.maxNominationsPerUser} 筆，你已經用完了。可以先撤回一筆。`, 'err');
+  const minesToday = CANDIDATES.filter(
+    (c) => c.nominatorId === ME.id + '' && c.day === TODAY
+  ).length;
+  if (MAX_NOMS > 0 && minesToday >= MAX_NOMS) {
+    return show(msg, `每人每天最多提名 ${MAX_NOMS} 筆，今天的額度用完了（${resetCountdown()}）。` +
+                     `也可以到排行榜撤回今天的某一筆，額度會還給你。`, 'err');
   }
 
   // doc id 用「被提名人 + 動物」組成，天生擋掉重複提名同一組合
@@ -842,6 +893,7 @@ $('submitBtn').addEventListener('click', async () => {
       ...picked,
       imageCredit: picked.imageUrl ? (searchResults[resultIdx]?.credit || '') : '使用者上傳',
       voteCount: 0,
+      day: taipeiDayInt(),          // 算在哪一天的提名額度，規則會驗證
       createdAt: serverTimestamp(),
     });
 
@@ -852,7 +904,9 @@ $('submitBtn').addEventListener('click', async () => {
     picked = null; searchResults = []; pickedAnimalEn = '';
     show(msg, '提名成功！切到「候選排行」看看。', 'ok');
   } catch (err) {
-    show(msg, '提名失敗：' + (err.code || err.message), 'err');
+    const code = err.code || '';
+    show(msg, '提名失敗：' + (code.includes('permission-denied')
+      ? '剛好跨過午夜了，請重新整理頁面再送一次。' : (code || err.message)), 'err');
   } finally {
     btn.textContent = '送出提名';
     updateSubmitState();

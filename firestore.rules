@@ -5,6 +5,14 @@ rules_version = '2';
 // 設計重點：整個系統沒有後端（GitHub Pages 是靜態的、Cloud Functions 要付費方案），
 // 所有防作弊都必須在這裡完成。
 //
+// 每日額度（每人每天 10 票、3 次提名，台北時間 0:00 重置）：
+// 規則能保證每筆紀錄的 day 欄位一定等於伺服器當下的日期，無法造假；
+// 「一人一票、不能重複投同一位候選」也是規則層強制的。
+// 但「一天最多幾筆」需要計數，Firestore 規則做不到，這部分由前端把關。
+//
+// 這個取捨是刻意的：daily cap 只是控制節奏，就算有人開 DevTools 繞過，
+// 他也只能提早投完那些他本來就投得到的候選人，不會投出第二票。
+//
 // 部署：Firebase Console → Firestore → 規則 → 貼上 → 發布
 //   或 firebase deploy --only firestore:rules
 
@@ -15,15 +23,25 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // 台北時間的今天，格式 YYYYMMDD 整數。
+    // request.time 是伺服器時間，所以使用者把電腦時鐘調掉也沒用；
+    // 前端 index.html 的 taipeiDayInt() 必須算出一樣的值。
+    function todayInt() {
+      let t = request.time + duration.value(8, 'h');
+      return t.year() * 10000 + t.month() * 100 + t.day();
+    }
+
     // ---------- 候選動物 ----------
     match /candidates/{candidateId} {
 
       allow read: if signedIn();
 
-      // 提名：只能以自己的身分提名，票數必須從 0 開始
+      // 提名：只能以自己的身分提名，票數必須從 0 開始，
+      // 且只能算在「今天」的每日額度上（不能改前端把提名記到別天）
       allow create: if signedIn()
         && request.resource.data.nominatorId == request.auth.uid
         && request.resource.data.voteCount == 0
+        && request.resource.data.day == todayInt()
         && request.resource.data.targetId is string
         && request.resource.data.targetName is string
         && request.resource.data.animalZh is string
@@ -69,7 +87,8 @@ service cloud.firestore {
 
       allow create: if signedIn()
         && voteId == request.resource.data.candidateId + '_' + request.auth.uid
-        && request.resource.data.uid == request.auth.uid;
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.day == todayInt();
 
       allow delete: if signedIn() && resource.data.uid == request.auth.uid;
 
