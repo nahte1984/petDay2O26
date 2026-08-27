@@ -486,7 +486,7 @@ import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 import {
-  getFirestore, collection, doc, getDoc, setDoc, deleteDoc,
+  getFirestore, collection, doc, getDoc, setDoc,
   onSnapshot, query, where, orderBy, runTransaction, serverTimestamp,
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
@@ -819,18 +819,8 @@ function render() {
 
     foot.append(cnt, vb);
 
-    if (c.nominatorId === ME.id + '' && c.voteCount === 0) {
-      const del = document.createElement('button');
-      del.className = 'ghost small';
-      del.textContent = '撤回';
-      del.style.borderColor = 'var(--line)';
-      del.addEventListener('click', async () => {
-        if (!confirm(`確定撤回「${c.targetName} 像 ${c.animalZh}」這筆提名？`)) return;
-        try { await deleteDoc(doc(db, 'candidates', c.id)); }
-        catch (err) { alert('撤回失敗：' + (err.code || err.message)); }
-      });
-      foot.append(del);
-    }
+    // 提名送出後無法自行撤回。不當提名由管理員從 Firebase Console 處理
+    // （Console 與 Admin SDK 不受 security rules 限制）。
 
     body.append(t, a, meta, foot);
     card.append(thumb, body);
@@ -855,7 +845,7 @@ async function castVote(c, btn) {
     await runTransaction(db, async (tx) => {
       const quotaSnap = await tx.get(quotaRef);
       const candSnap = await tx.get(candRef);
-      if (!candSnap.exists()) throw new Error('這筆提名已經被撤回了');
+      if (!candSnap.exists()) throw new Error('這筆提名已經被管理員移除了');
 
       const used = quotaSnap.exists() ? (quotaSnap.data().used || 0) : 0;
       if (MAX_VOTES > 0 && used >= MAX_VOTES) {
@@ -1076,8 +1066,7 @@ $('submitBtn').addEventListener('click', async () => {
     (c) => c.nominatorId === ME.id + '' && c.day === TODAY
   ).length;
   if (MAX_NOMS > 0 && minesToday >= MAX_NOMS) {
-    return show(msg, `每人每天最多提名 ${MAX_NOMS} 筆，今天的額度用完了（${resetCountdown()}）。` +
-                     `也可以到排行榜撤回今天的某一筆，額度會還給你。`, 'err');
+    return show(msg, `每人每天最多提名 ${MAX_NOMS} 筆，今天的額度用完了（${resetCountdown()}）。`, 'err');
   }
 
   // doc id 用「被提名人 + 動物」組成，天生擋掉重複提名同一組合
