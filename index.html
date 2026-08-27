@@ -310,7 +310,7 @@
   <div class="card-box">
   <img class="brand" src="assets/07.png" alt="Ogilvy">
   <h1 id="loginTitle">奧美非人類日大投票</h1>
-  <p class="sub" id="loginSub">你的同事長得像哪隻動物？</p>
+  <p class="sub" id="loginSub">人類們請先登入</p>
 
   <form id="loginForm" autocomplete="off">
     <div class="field">
@@ -402,19 +402,29 @@
      只能靠這支傳統 script 在外面聽，不然畫面會完全沒反應、也不知道錯在哪。 -->
 <div id="fatal"></div>
 <script>
-  window.addEventListener('error', function (e) {
+  // 程式成功啟動後會被設成 true，用來分辨「載入失敗」與「執行中出錯」——
+  // 兩者的嚴重性差很多，訊息寫一樣只會誤導人。
+  window.__booted = false;
+
+  function showFatal(text) {
     var el = document.getElementById('fatal');
     if (!el) return;
+    el.style.display = 'block';
+    el.textContent = (window.__booted ? '發生錯誤：' : '程式載入失敗：') + text;
+    // 已經正常啟動後的零星錯誤不該一直佔著畫面，8 秒後自動收起
+    if (window.__booted) {
+      clearTimeout(el.__t);
+      el.__t = setTimeout(function () { el.style.display = 'none'; }, 8000);
+    }
+  }
+
+  window.addEventListener('error', function (e) {
     var where = e.filename ? ' （' + e.filename.split('/').pop() +
                 (e.lineno ? ':' + e.lineno : '') + '）' : '';
-    el.style.display = 'block';
-    el.textContent = '程式載入失敗：' + (e.message || '未知錯誤') + where;
+    showFatal((e.message || '未知錯誤') + where);
   });
   window.addEventListener('unhandledrejection', function (e) {
-    var el = document.getElementById('fatal');
-    if (!el) return;
-    el.style.display = 'block';
-    el.textContent = '執行錯誤：' + (e.reason && (e.reason.code || e.reason.message) || e.reason);
+    showFatal(String(e.reason && (e.reason.code || e.reason.message) || e.reason));
   });
 </script>
 
@@ -428,7 +438,7 @@ const FIREBASE_CONFIG = CFG.FIREBASE_CONFIG || CFG.firebaseConfig || CFG.default
 const PEXELS_API_KEY = CFG.PEXELS_API_KEY || CFG.pexelsApiKey || 'PASTE_';
 const EVENT = Object.assign({
   title: '奧美非人類日大投票',
-  subtitle: '你的同事長得像哪隻動物？',
+  subtitle: '人類們請先登入',
   maxVotesPerDay: 10,
   maxNominationsPerDay: 3,
   votingOpen: true,
@@ -649,8 +659,7 @@ onAuthStateChanged(auth, (user) => {
     startListening();
   } else {
     ME = null;
-    unsubCandidates?.(); unsubMyVotes?.();
-    unsubCandidates = unsubMyVotes = null;
+    stopListening();
     // 第一次進站看海報；已經按過「大投票」的人留在登入畫面
     showView(entered ? 'login' : 'landing');
   }
@@ -674,7 +683,21 @@ let dayWatcher = null;
 const usedToday = () => MY_VOTES.filter((v) => v.day === TODAY).length;
 const myVotesFor = (id) => MY_VOTES.filter((v) => v.candidateId === id).length;
 
+// 登出時務必把三樣東西都收掉：兩個 Firestore 監聽 + 每 30 秒的換日計時器。
+// 之前只收了監聽，計時器留著繼續呼叫 render()，而 render() 會用到已經變成
+// null 的 ME，於是每 30 秒就噴一次 TypeError。
+function stopListening() {
+  unsubCandidates?.(); unsubMyVotes?.();
+  unsubCandidates = unsubMyVotes = null;
+  clearInterval(dayWatcher);
+  dayWatcher = null;
+  CANDIDATES = [];
+  MY_VOTES = [];
+}
+
 function startListening() {
+  stopListening();          // 重複登入時不要留下舊的監聽
+
   unsubCandidates = onSnapshot(
     query(collection(db, 'candidates'), orderBy('voteCount', 'desc')),
     (snap) => {
@@ -711,6 +734,10 @@ function imageSrcOf(c) {
 }
 
 function render() {
+  // 保險：Firestore 的監聽有可能在登出後才把最後一筆事件送達，
+  // 這時 ME 已經是 null，直接跳過不畫。
+  if (!ME) return;
+
   const box = $('cards');
 
   // 額度只看「今天」投的票。票不能取消，所以用掉就是用掉了。
@@ -1114,6 +1141,8 @@ $('submitBtn').addEventListener('click', async () => {
   if (!EVENT.votingOpen) {
     $('submitBtn').disabled = true;
   }
+  // 走到這裡代表程式已經正常啟動，之後的錯誤都算「執行中出錯」而非載入失敗
+  window.__booted = true;
 })();
 </script>
 </body>

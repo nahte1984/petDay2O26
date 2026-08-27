@@ -23,7 +23,7 @@ export const PEXELS_API_KEY = '4HEtQmvVIU15ese2gPl7937eFLAYBlDfoIGplXF3Co1NeJdxJ
 // 活動設定
 export const EVENT = {
   title: '奧美非人類日大投票',
-  subtitle: '你的同事長得像哪隻動物？',
+  subtitle: '人類們請先登入',
 
   // ── 每日額度，台北時間每天 0:00 自動重置 ──
 
