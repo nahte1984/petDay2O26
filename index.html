@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>奧美寵物日投票</title>
+<title>奧美非人類日大投票</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@700&display=swap" rel="stylesheet">
@@ -309,7 +309,7 @@
 <div class="wrap" id="loginView">
   <div class="card-box">
   <img class="brand" src="assets/07.png" alt="Ogilvy">
-  <h1 id="loginTitle">奧美寵物日</h1>
+  <h1 id="loginTitle">奧美非人類日大投票</h1>
   <p class="sub" id="loginSub">你的同事長得像哪隻動物？</p>
 
   <form id="loginForm" autocomplete="off">
@@ -427,7 +427,7 @@ import { localTranslate, normalizeAnimal } from './animals.js';
 const FIREBASE_CONFIG = CFG.FIREBASE_CONFIG || CFG.firebaseConfig || CFG.default;
 const PEXELS_API_KEY = CFG.PEXELS_API_KEY || CFG.pexelsApiKey || 'PASTE_';
 const EVENT = Object.assign({
-  title: '奧美寵物日',
+  title: '奧美非人類日大投票',
   subtitle: '你的同事長得像哪隻動物？',
   maxVotesPerDay: 10,
   maxNominationsPerDay: 3,
@@ -1104,7 +1104,7 @@ $('submitBtn').addEventListener('click', async () => {
 (async () => {
   $('loginTitle').textContent = EVENT.title;
   $('loginSub').textContent = EVENT.subtitle;
-  document.title = EVENT.title + '投票';
+  document.title = EVENT.title;
   try {
     await loadRoster();
   } catch (err) {
