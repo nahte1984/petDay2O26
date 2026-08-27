@@ -4,59 +4,154 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>奧美寵物日投票</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@700&display=swap" rel="stylesheet">
 <style>
+  /* ================================================================
+     視覺語言來自 Figma「petDay」154:2
+       底色 #00beff ／ 主紅 #fa0044 ／ 亮黃 #ffec00 ／ 標題字 IBM Plex Sans JP Bold
+     首頁是一張等比縮放的海報，登入與投票頁沿用同一套顏色與字體。
+     ================================================================ */
   :root {
-    --red: #e01a2b;
-    --ink: #16161a;
-    --paper: #fbf9f6;
-    --line: #e3ded6;
-    --muted: #7b7670;
-    --radius: 14px;
+    --cyan: #00beff;
+    --red: #fa0044;
+    --yellow: #ffec00;
+    --ink: #111114;
+    --white: #fff;
+    --muted: #5c6970;
+    --line: #111114;
+    --radius: 12px;
+    --display: "IBM Plex Sans JP", "PingFang TC", "Noto Sans TC",
+               "Microsoft JhengHei", sans-serif;
+    --body: "Helvetica Neue", "PingFang TC", "Noto Sans TC",
+            "Microsoft JhengHei", sans-serif;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; padding: 0; }
   body {
-    background: var(--paper);
+    background: var(--cyan);
     color: var(--ink);
-    font-family: "Helvetica Neue", "PingFang TC", "Noto Sans TC",
-                 "Microsoft JhengHei", sans-serif;
+    font-family: var(--body);
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
   }
   .wrap { max-width: 720px; margin: 0 auto; padding: 0 18px 80px; }
 
-  /* ---------- 通用元件 ---------- */
-  h1 { font-size: 26px; letter-spacing: -.02em; margin: 0 0 4px; }
-  h2 { font-size: 17px; margin: 0 0 12px; }
-  .sub { color: var(--muted); font-size: 14px; margin: 0 0 24px; }
-  label { display: block; font-size: 13px; font-weight: 600; margin: 0 0 6px; }
+  /* ================= 首頁海報 ================= */
+  /* 舞台鎖定 420×812 的比例，同時受寬度與高度限制，所以永遠整張看得到、不用捲動。
+     內部元素全部用百分比定位，字級用 cqw（100cqw = 舞台寬），等比例縮放。 */
+  #landingView {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .stage {
+    position: relative;
+    width: min(420px, 100vw, 51.724vh);
+    width: min(420px, 100vw, 51.724dvh);
+    aspect-ratio: 420 / 812;
+    container-type: inline-size;
+  }
+  .stage img { position: absolute; object-fit: contain; }
+
+  .st-logo  { left: 2.381%;  top: 1.232%;  width: 23.810%; height: 7.019%; }
+  .st-fei   { left: 2.381%;  top: 36.95%;  width: 23.810%; height: 10.17%; }
+  .st-ren   { left: 26.190%; top: 28.571%; width: 23.810%; height: 12.438%; }
+  .st-lei   { left: 50%;     top: 30.296%; width: 23.810%; height: 6.527%; }
+  .st-ri    { left: 73.810%; top: 34.113%; width: 23.810%; height: 13.670%; }
+  .st-word1 { left: 2.381%;  top: 44.951%; width: 95.238%; height: 6.281%; }
+  .st-word2 { left: 2.381%;  top: 52.340%; width: 95.238%; height: 6.527%; }
+
+  .st-sub {
+    position: absolute;
+    top: 61.576%;
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 6.667cqw;
+    line-height: 1;
+    color: var(--red);
+    letter-spacing: 2cqw;
+    white-space: nowrap;
+  }
+  .st-sub.left  { left: 2.381%; }
+  /* letter-spacing 會在最後一字後面多留一格，右對齊時要補回來 */
+  .st-sub.right { right: 2.381%; margin-right: -2cqw; }
+
+  .st-cta {
+    position: absolute;
+    left: 25%; top: 71.921%;
+    width: 50%; height: 7.882%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--red);
+    border: 0.476cqw solid var(--yellow);
+    border-radius: 3.571cqw;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 9.048cqw;
+    letter-spacing: 2.714cqw;
+    text-indent: 2.714cqw;      /* 同上，讓置中真的置中 */
+    color: var(--white);
+    cursor: pointer;
+    padding: 0;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .st-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,.18); }
+  .st-cta:active { transform: translateY(1px); box-shadow: none; }
+
+  /* 不支援 container query 的舊瀏覽器：退回設計稿的固定字級 */
+  @supports not (container-type: inline-size) {
+    .st-sub { font-size: 28px; letter-spacing: 8.4px; }
+    .st-sub.right { margin-right: -8.4px; }
+    .st-cta { font-size: 38px; letter-spacing: 11.4px; text-indent: 11.4px;
+              border-width: 2px; border-radius: 15px; }
+  }
+
+  /* ================= 通用元件 ================= */
+  h1 {
+    font-family: var(--display); font-weight: 700;
+    font-size: 30px; letter-spacing: .02em; margin: 0 0 6px; color: var(--red);
+  }
+  h2 {
+    font-family: var(--display); font-weight: 700;
+    font-size: 19px; margin: 0 0 14px;
+  }
+  .sub { color: var(--ink); font-size: 14px; margin: 0 0 24px; opacity: .8; }
+  label { display: block; font-size: 13px; font-weight: 700; margin: 0 0 6px; }
   input[type=text], input[type=password], input[type=tel], select {
     width: 100%; padding: 12px 14px; font-size: 16px; font-family: inherit;
-    border: 1.5px solid var(--line); border-radius: 10px;
-    background: #fff; color: var(--ink); outline: none;
+    border: 2px solid var(--ink); border-radius: 10px;
+    background: var(--white); color: var(--ink); outline: none;
+    transition: box-shadow .12s ease;
   }
-  input:focus, select:focus { border-color: var(--ink); }
+  input:focus, select:focus { box-shadow: 0 0 0 4px var(--yellow); }
   .field { margin-bottom: 16px; }
   .hint { font-size: 12px; color: var(--muted); margin-top: 5px; }
   button {
-    font-family: inherit; font-size: 15px; font-weight: 600;
-    border-radius: 10px; border: 1.5px solid var(--ink);
-    padding: 12px 18px; cursor: pointer;
-    background: var(--ink); color: #fff; transition: opacity .15s;
+    font-family: var(--body); font-size: 15px; font-weight: 700;
+    border-radius: 10px; border: 2px solid var(--ink);
+    padding: 11px 18px; cursor: pointer;
+    background: var(--ink); color: var(--white);
+    transition: transform .1s ease, background .12s ease, color .12s ease;
   }
-  button:hover:not(:disabled) { opacity: .82; }
-  button:disabled { opacity: .4; cursor: not-allowed; }
-  button.ghost { background: transparent; color: var(--ink); }
+  button:hover:not(:disabled) { transform: translateY(-1px); }
+  button:active:not(:disabled) { transform: translateY(1px); }
+  button:disabled { opacity: .35; cursor: not-allowed; }
+  button.ghost { background: var(--white); color: var(--ink); }
+  button.primary { background: var(--red); border-color: var(--yellow); }
   button.small { padding: 8px 13px; font-size: 13px; }
   button.block { width: 100%; }
   .row { display: flex; gap: 10px; flex-wrap: wrap; }
   .msg {
     padding: 11px 14px; border-radius: 10px; font-size: 14px;
-    margin: 14px 0; display: none;
+    margin: 14px 0; display: none; border: 2px solid var(--ink); font-weight: 600;
   }
   .msg.show { display: block; }
-  .msg.err { background: #fdecec; color: #a01020; }
-  .msg.ok  { background: #eaf6ec; color: #1c6b31; }
+  .msg.err { background: var(--red); color: var(--white); border-color: var(--ink); }
+  .msg.ok  { background: var(--yellow); color: var(--ink); }
   .spinner {
     display: inline-block; width: 14px; height: 14px; vertical-align: -2px;
     border: 2px solid currentColor; border-top-color: transparent;
@@ -64,78 +159,106 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ---------- 登入 ---------- */
-  #loginView { max-width: 380px; margin: 0 auto; padding-top: 14vh; }
-  .logo {
-    display: inline-block; background: var(--red); color: #fff;
-    font-weight: 800; font-size: 12px; letter-spacing: .18em;
-    padding: 5px 10px; border-radius: 4px; margin-bottom: 18px;
+  /* ================= 登入 ================= */
+  #loginView { display: none; max-width: 400px; margin: 0 auto; padding-top: 8vh; }
+  #loginView .card-box {
+    background: var(--white); border: 3px solid var(--ink);
+    border-radius: 18px; padding: 26px 22px;
+    box-shadow: 8px 8px 0 rgba(0,0,0,.25);
   }
+  .brand { width: 96px; height: auto; display: block; margin-bottom: 18px; }
   #whoPicker { display: none; }
 
-  /* ---------- App 外框 ---------- */
+  /* ================= App 外框 ================= */
   #appView { display: none; }
   header.bar {
     position: sticky; top: 0; z-index: 20;
-    background: rgba(251,249,246,.93); backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--line);
+    background: var(--cyan);
+    border-bottom: 3px solid var(--ink);
     display: flex; align-items: center; gap: 12px;
-    padding: 12px 18px; margin-bottom: 18px;
+    padding: 10px 18px; margin-bottom: 18px;
   }
-  .bar .me { font-size: 13px; color: var(--muted); margin-left: auto; }
-  .tabs { display: flex; gap: 6px; margin: 0 0 20px; }
+  header.bar .brand { width: 62px; margin: 0; }
+  .bar .title {
+    font-family: var(--display); font-weight: 700;
+    font-size: 17px; letter-spacing: .08em;
+  }
+  .bar .me { font-size: 13px; margin-left: auto; font-weight: 600; }
+  .tabs { display: flex; gap: 8px; margin: 0 0 20px; }
   .tabs button {
-    flex: 1; background: transparent; color: var(--muted);
-    border: 1.5px solid var(--line);
+    flex: 1; background: var(--white); color: var(--ink);
+    font-family: var(--display); letter-spacing: .06em;
   }
-  .tabs button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .tabs button.on {
+    background: var(--red); color: var(--white); border-color: var(--yellow);
+  }
   .panel { display: none; }
   .panel.on { display: block; }
+  #listSummary {
+    background: var(--white); border: 2px solid var(--ink); border-radius: 10px;
+    padding: 9px 13px; font-size: 13px; font-weight: 600; opacity: 1;
+  }
 
-  /* ---------- 候選卡 ---------- */
+  /* ================= 候選卡 ================= */
   .card {
-    background: #fff; border: 1px solid var(--line);
-    border-radius: var(--radius); overflow: hidden; margin-bottom: 14px;
-    display: flex; gap: 0;
+    background: var(--white); border: 2px solid var(--ink);
+    border-radius: var(--radius); overflow: hidden; margin-bottom: 12px;
+    display: flex; box-shadow: 4px 4px 0 rgba(0,0,0,.18);
   }
   .card .thumb {
-    width: 118px; min-width: 118px; background: #f0ece6;
+    width: 112px; min-width: 112px; background: var(--cyan);
     background-size: cover; background-position: center;
+    border-right: 2px solid var(--ink);
   }
-  .card .body { padding: 13px 15px; flex: 1; min-width: 0; }
-  .card .target { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+  .card .body { padding: 12px 14px; flex: 1; min-width: 0; }
+  .card .target {
+    font-family: var(--display); font-weight: 700;
+    font-size: 17px; letter-spacing: .01em;
+  }
   .card .animal { font-size: 14px; margin-top: 1px; }
   .card .animal b { color: var(--red); }
   .card .meta { font-size: 12px; color: var(--muted); margin-top: 6px; }
-  .card .foot {
-    display: flex; align-items: center; gap: 10px; margin-top: 11px;
+  .card .foot { display: flex; align-items: center; gap: 10px; margin-top: 11px; }
+  .count {
+    font-family: var(--display); font-weight: 700;
+    font-size: 24px; color: var(--red); line-height: 1;
+    font-variant-numeric: tabular-nums;
   }
-  .count { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
-  .count span { font-size: 12px; font-weight: 600; color: var(--muted); }
-  .voted { background: var(--red) !important; border-color: var(--red) !important; color: #fff !important; }
+  .count span { font-size: 11px; color: var(--muted); letter-spacing: .05em; }
   .rank {
-    position: absolute; margin: 8px; background: var(--ink); color: #fff;
-    font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 20px;
+    position: absolute; margin: 8px;
+    background: var(--yellow); color: var(--ink);
+    font-family: var(--display); font-weight: 700;
+    font-size: 11px; padding: 3px 8px; border-radius: 20px;
+    border: 2px solid var(--ink);
   }
   .empty {
-    text-align: center; color: var(--muted); font-size: 14px;
-    padding: 50px 20px; border: 1.5px dashed var(--line); border-radius: var(--radius);
+    text-align: center; font-size: 14px; font-weight: 600;
+    padding: 46px 20px; border: 3px dashed var(--ink); border-radius: var(--radius);
+    background: rgba(255,255,255,.5);
   }
 
-  /* ---------- 提名表單 ---------- */
+  /* ================= 提名表單 ================= */
+  #tab-new { background: var(--white); border: 3px solid var(--ink);
+             border-radius: 18px; padding: 20px 18px;
+             box-shadow: 6px 6px 0 rgba(0,0,0,.2); }
+  #tab-new.panel { display: none; }
+  #tab-new.panel.on { display: block; }
   .preview {
-    display: none; margin-top: 14px; border: 1px solid var(--line);
-    border-radius: var(--radius); overflow: hidden; background: #fff;
+    display: none; margin-top: 14px; border: 2px solid var(--ink);
+    border-radius: var(--radius); overflow: hidden; background: var(--white);
   }
   .preview.show { display: block; }
-  .preview img { width: 100%; display: block; max-height: 320px; object-fit: cover; }
+  .preview img { width: 100%; display: block; max-height: 320px; object-fit: cover;
+                 border-bottom: 2px solid var(--ink); }
   .preview .pfoot {
-    padding: 10px 13px; display: flex; align-items: center;
+    padding: 9px 12px; display: flex; align-items: center;
     gap: 10px; font-size: 12px; color: var(--muted);
   }
   .upload-btn {
-    display: inline-block; padding: 12px 18px; font-size: 15px; font-weight: 600;
-    border: 1.5px solid var(--ink); border-radius: 10px; cursor: pointer;
+    display: inline-block; padding: 11px 18px; font-size: 15px; font-weight: 700;
+    border: 2px solid var(--ink); border-radius: 10px; cursor: pointer;
+    background: var(--yellow);
   }
   input[type=file] { display: none; }
   .divider {
@@ -144,23 +267,42 @@
   }
   .divider::before {
     content: ''; position: absolute; left: 0; right: 0; top: 50%;
-    border-top: 1px solid var(--line); z-index: 0;
+    border-top: 2px solid var(--line); opacity: .25; z-index: 0;
   }
-  .divider span { background: var(--paper); padding: 0 12px; position: relative; }
+  .divider span { background: var(--white); padding: 0 12px; position: relative; }
 
   /* 致命錯誤橫幅：程式整段掛掉時唯一還會出現的東西 */
   #fatal {
     display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 999;
-    background: #a01020; color: #fff; padding: 12px 16px;
+    background: var(--ink); color: var(--yellow); padding: 12px 16px;
     font-size: 13px; line-height: 1.5; font-family: ui-monospace, monospace;
   }
 </style>
 </head>
 <body>
 
+<!-- ==================== 首頁海報 ====================
+     版面來自 Figma petDay 154:2。舞台固定 420×812 比例、等比縮放，
+     所以在任何螢幕上都是完整一張，不會被裁掉也不用捲動。 -->
+<div id="landingView">
+  <div class="stage">
+    <img class="st-logo"  src="assets/07.png" alt="Ogilvy">
+    <img class="st-fei"   src="assets/01.svg" alt="非">
+    <img class="st-ren"   src="assets/02.svg" alt="人">
+    <img class="st-lei"   src="assets/03.png" alt="類">
+    <img class="st-ri"    src="assets/04.png" alt="日">
+    <img class="st-word1" src="assets/05.png" alt="Non-Humans">
+    <img class="st-word2" src="assets/06.png" alt="Unleashed !!!">
+    <p class="st-sub left">我的同事</p>
+    <p class="st-sub right">像什麼動物</p>
+    <button class="st-cta" id="enterBtn" type="button">大投票</button>
+  </div>
+</div>
+
 <!-- ==================== 登入 ==================== -->
 <div class="wrap" id="loginView">
-  <div class="logo">OGILVY</div>
+  <div class="card-box">
+  <img class="brand" src="assets/07.png" alt="Ogilvy">
   <h1 id="loginTitle">奧美寵物日</h1>
   <p class="sub" id="loginSub">你的同事長得像哪隻動物？</p>
 
@@ -184,15 +326,16 @@
     </div>
 
     <div class="msg err" id="loginMsg"></div>
-    <button class="block" id="loginBtn" type="submit">登入</button>
+    <button class="block primary" id="loginBtn" type="submit">登入</button>
   </form>
+  </div>
 </div>
 
 <!-- ==================== 主程式 ==================== -->
 <div id="appView">
   <header class="bar">
-    <div class="logo" style="margin:0;font-size:11px;">OGILVY</div>
-    <strong style="font-size:15px;">寵物日</strong>
+    <img class="brand" src="assets/07.png" alt="Ogilvy">
+    <span class="title">非人類日</span>
     <span class="me" id="meLabel"></span>
     <button class="ghost small" id="logoutBtn">登出</button>
   </header>
@@ -467,19 +610,34 @@ $('loginForm').addEventListener('submit', async (e) => {
   }
 });
 
-$('logoutBtn').addEventListener('click', () => signOut(auth));
+$('logoutBtn').addEventListener('click', () => { entered = false; signOut(auth); });
 
 // ==================== 登入狀態 ====================
 let ME = null;
 let unsubCandidates = null;
 let unsubMyVotes = null;
 
+// 三個畫面：海報首頁 → 登入 → 投票。一次只顯示一個。
+function showView(name) {
+  $('landingView').style.display = name === 'landing' ? 'flex' : 'none';
+  $('loginView').style.display = name === 'login' ? 'block' : 'none';
+  $('appView').style.display = name === 'app' ? 'block' : 'none';
+}
+
+// 首頁的「大投票」進到登入。
+// entered 是為了避免 Firebase 稍晚回報「未登入」時，把已經按過按鈕的人踢回首頁。
+let entered = false;
+$('enterBtn').addEventListener('click', () => {
+  entered = true;
+  showView('login');
+  $('who').focus();
+});
+
 onAuthStateChanged(auth, (user) => {
   if (user) {
     ME = BY_ID.get(user.uid);
     if (!ME) { signOut(auth); return; }
-    $('loginView').style.display = 'none';
-    $('appView').style.display = 'block';
+    showView('app');
     $('meLabel').textContent = `${ME.name}`;
     $('pin').value = '';
     startListening();
@@ -487,8 +645,8 @@ onAuthStateChanged(auth, (user) => {
     ME = null;
     unsubCandidates?.(); unsubMyVotes?.();
     unsubCandidates = unsubMyVotes = null;
-    $('loginView').style.display = 'block';
-    $('appView').style.display = 'none';
+    // 第一次進站看海報；已經按過「大投票」的人留在登入畫面
+    showView(entered ? 'login' : 'landing');
   }
 });
 
