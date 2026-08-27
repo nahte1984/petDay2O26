@@ -76,6 +76,10 @@
     color: var(--red);
     letter-spacing: 2cqw;
     white-space: nowrap;
+    /* 黃色描邊。paint-order 讓描邊畫在填色「後面」，
+       所以黃邊長在紅字外圍，而不是往內吃掉紅色。 */
+    -webkit-text-stroke: 0.476cqw var(--yellow);
+    paint-order: stroke fill;
   }
   .st-sub.left  { left: 2.381%; }
   /* letter-spacing 會在最後一字後面多留一格，右對齊時要補回來 */
@@ -94,20 +98,24 @@
     font-size: 9.048cqw;
     letter-spacing: 2.714cqw;
     text-indent: 2.714cqw;      /* 同上，讓置中真的置中 */
+    /* 視覺微調：字體的中文字面偏上，往下推 1px 看起來才是置中。
+       嫌多／嫌少就改這個值（0.238cqw ≈ 1px）。 */
+    --cta-nudge: 0.238cqw;
     color: var(--white);
     cursor: pointer;
     padding: 0;
     transition: transform .12s ease, box-shadow .12s ease;
   }
+  .st-cta span { display: inline-block; transform: translateY(var(--cta-nudge)); }
   .st-cta:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,.18); }
   .st-cta:active { transform: translateY(1px); box-shadow: none; }
 
   /* 不支援 container query 的舊瀏覽器：退回設計稿的固定字級 */
   @supports not (container-type: inline-size) {
-    .st-sub { font-size: 28px; letter-spacing: 8.4px; }
+    .st-sub { font-size: 28px; letter-spacing: 8.4px; -webkit-text-stroke-width: 2px; }
     .st-sub.right { margin-right: -8.4px; }
     .st-cta { font-size: 38px; letter-spacing: 11.4px; text-indent: 11.4px;
-              border-width: 2px; border-radius: 15px; }
+              border-width: 2px; border-radius: 15px; --cta-nudge: 1px; }
   }
 
   /* ================= 通用元件 ================= */
@@ -164,7 +172,6 @@
   #loginView .card-box {
     background: var(--white); border: 3px solid var(--ink);
     border-radius: 18px; padding: 26px 22px;
-    box-shadow: 8px 8px 0 rgba(0,0,0,.25);
   }
   .brand { width: 96px; height: auto; display: block; margin-bottom: 18px; }
   #whoPicker { display: none; }
@@ -203,7 +210,7 @@
   .card {
     background: var(--white); border: 2px solid var(--ink);
     border-radius: var(--radius); overflow: hidden; margin-bottom: 12px;
-    display: flex; box-shadow: 4px 4px 0 rgba(0,0,0,.18);
+    display: flex;
   }
   .card .thumb {
     width: 112px; min-width: 112px; background: var(--cyan);
@@ -240,8 +247,7 @@
 
   /* ================= 提名表單 ================= */
   #tab-new { background: var(--white); border: 3px solid var(--ink);
-             border-radius: 18px; padding: 20px 18px;
-             box-shadow: 6px 6px 0 rgba(0,0,0,.2); }
+             border-radius: 18px; padding: 20px 18px; }
   #tab-new.panel { display: none; }
   #tab-new.panel.on { display: block; }
   .preview {
@@ -295,7 +301,7 @@
     <img class="st-word2" src="assets/06.png" alt="Unleashed !!!">
     <p class="st-sub left">我的同事</p>
     <p class="st-sub right">像什麼動物</p>
-    <button class="st-cta" id="enterBtn" type="button">大投票</button>
+    <button class="st-cta" id="enterBtn" type="button"><span>大投票</span></button>
   </div>
 </div>
 
